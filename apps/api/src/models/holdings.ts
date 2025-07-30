@@ -1,0 +1,138 @@
+import { Holding, CreateHoldingRequest, UpdateHoldingRequest } from '@portfolio/shared';
+import Database from './database';
+import { v4 as uuidv4 } from 'uuid';
+
+class HoldingsModel {
+  private db: Database;
+
+  constructor(db: Database) {
+    this.db = db;
+  }
+
+  async create(holdingData: CreateHoldingRequest): Promise<Holding> {
+    const id = uuidv4();
+    const now = new Date().toISOString();
+
+    const sql = `
+      INSERT INTO holdings (id, symbol, name, type, quantity, cost_basis, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    await this.db.run(sql, [
+      id,
+      holdingData.symbol.toUpperCase(),
+      holdingData.name,
+      holdingData.type,
+      holdingData.quantity,
+      holdingData.costBasis,
+      now,
+      now
+    ]);
+
+    return this.findById(id) as Promise<Holding>;
+  }
+
+  async findAll(): Promise<Holding[]> {
+    const sql = `
+      SELECT 
+        id,
+        symbol,
+        name,
+        type,
+        quantity,
+        cost_basis as costBasis,
+        current_price as currentPrice,
+        last_updated as lastUpdated,
+        created_at as createdAt,
+        updated_at as updatedAt
+      FROM holdings
+      ORDER BY created_at DESC
+    `;
+
+    const rows = await this.db.all(sql);
+    return rows.map(this.mapRowToHolding);
+  }
+
+  async findById(id: string): Promise<Holding | null> {
+    const sql = `
+      SELECT 
+        id,
+        symbol,
+        name,
+        type,
+        quantity,
+        cost_basis as costBasis,
+        current_price as currentPrice,
+        last_updated as lastUpdated,
+        created_at as createdAt,
+        updated_at as updatedAt
+      FROM holdings
+      WHERE id = ?
+    `;
+
+    const row = await this.db.get(sql, [id]);
+    return row ? this.mapRowToHolding(row) : null;
+  }
+
+  async update(id: string, updates: UpdateHoldingRequest): Promise<Holding | null> {
+    const existing = await this.findById(id);
+    if (!existing) return null;
+
+    const fieldsToUpdate: string[] = [];
+    const values: any[] = [];
+
+    if (updates.quantity !== undefined) {
+      fieldsToUpdate.push('quantity = ?');
+      values.push(updates.quantity);
+    }
+
+    if (updates.costBasis !== undefined) {
+      fieldsToUpdate.push('cost_basis = ?');
+      values.push(updates.costBasis);
+    }
+
+    if (fieldsToUpdate.length === 0) return existing;
+
+    fieldsToUpdate.push('updated_at = ?');
+    values.push(new Date().toISOString());
+    values.push(id);
+
+    const sql = `UPDATE holdings SET ${fieldsToUpdate.join(', ')} WHERE id = ?`;
+    await this.db.run(sql, values);
+
+    return this.findById(id) as Promise<Holding>;
+  }
+
+  async updatePrice(symbol: string, price: number): Promise<void> {
+    const sql = `
+      UPDATE holdings 
+      SET current_price = ?, last_updated = ?
+      WHERE symbol = ?
+    `;
+
+    await this.db.run(sql, [price, new Date().toISOString(), symbol.toUpperCase()]);
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const sql = 'DELETE FROM holdings WHERE id = ?';
+    const result = await this.db.run(sql, [id]);
+    return result.changes > 0;
+  }
+
+  private mapRowToHolding(row: any): Holding {
+    return {
+      id: row.id,
+      symbol: row.symbol,
+      name: row.name,
+      type: row.type,
+      quantity: row.quantity,
+      costBasis: row.costBasis,
+      currentPrice: row.currentPrice,
+      lastUpdated: row.lastUpdated ? new Date(row.lastUpdated) : undefined,
+      createdAt: new Date(row.createdAt),
+      updatedAt: new Date(row.updatedAt)
+    };
+  }
+}
+
+export default HoldingsModel;
