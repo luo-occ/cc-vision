@@ -28,13 +28,27 @@ export function formatNumber(number: number): string {
 }
 
 export function getChangeColor(change: number): string {
-  if (change > 0) return 'text-success-600';
-  if (change < 0) return 'text-danger-600';
-  return 'text-gray-600';
+  if (change > 0) return 'text-success';
+  if (change < 0) return 'text-destructive';
+  return 'text-muted-foreground';
 }
 
 export function getChangeBgColor(change: number): string {
-  if (change > 0) return 'bg-success-50';
-  if (change < 0) return 'bg-danger-50';
-  return 'bg-gray-50';
+  if (change > 0) return 'bg-success/10';
+  if (change < 0) return 'bg-destructive/10';
+  return 'bg-muted';
+}
+
+export function formatCurrencyWithSymbol(amount: number, currency: string = 'USD'): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
+export function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + '...';
 }

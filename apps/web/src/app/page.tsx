@@ -6,6 +6,8 @@ import { PortfolioSummary } from '@/components/PortfolioSummary';
 import { HoldingsList } from '@/components/HoldingsList';
 import { AddHoldingModal } from '@/components/AddHoldingModal';
 import { Plus, RefreshCw, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function HomePage() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -22,10 +24,10 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading portfolio...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading portfolio...</p>
         </div>
       </div>
     );
@@ -33,17 +35,14 @@ export default function HomePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-danger-600 mx-auto" />
-          <h2 className="mt-4 text-xl font-semibold text-gray-900">Error Loading Portfolio</h2>
-          <p className="mt-2 text-gray-600">Failed to load your portfolio data.</p>
-          <button
-            onClick={() => refetch()}
-            className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
-          >
+          <AlertCircle className="h-12 w-12 text-destructive mx-auto" />
+          <h2 className="mt-4 text-xl font-semibold text-foreground">Error Loading Portfolio</h2>
+          <p className="mt-2 text-muted-foreground">Failed to load your portfolio data.</p>
+          <Button onClick={() => refetch()} className="mt-4">
             Try Again
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -51,43 +50,40 @@ export default function HomePage() {
 
   if (!portfolio) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">No portfolio data available.</p>
+          <p className="text-muted-foreground">No portfolio data available.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Portfolio Tracker</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-foreground">Portfolio Tracker</h1>
+            <p className="text-muted-foreground mt-1">
               Last updated: {new Date(portfolio.lastUpdated).toLocaleString()}
             </p>
           </div>
           
           <div className="flex space-x-3">
-            <button
+            <Button
+              variant="outline"
               onClick={handleRefreshPrices}
               disabled={refreshPrices.isPending}
-              className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${refreshPrices.isPending ? 'animate-spin' : ''}`} />
               {refreshPrices.isPending ? 'Refreshing...' : 'Refresh Prices'}
-            </button>
+            </Button>
             
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="flex items-center px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
-            >
+            <Button onClick={() => setShowAddModal(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Holding
-            </button>
+            </Button>
           </div>
         </div>
 
