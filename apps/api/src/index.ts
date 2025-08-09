@@ -7,13 +7,14 @@ import dotenv from 'dotenv';
 
 import Database from './models/database';
 import HoldingsModel from './models/holdings';
-import PriceService from './services/priceService';
+import EnhancedPriceService from './services/enhancedPriceService';
 import PortfolioService from './services/portfolioService';
 import PriceUpdateScheduler from './utils/scheduler';
 
 import createPortfolioRoutes from './routes/portfolio';
 import createSearchRoutes from './routes/search';
 import createPricesRoutes from './routes/prices';
+import enhancedPricesRouter from './routes/enhancedPrices';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
 // Load environment variables
@@ -40,7 +41,7 @@ async function startServer() {
     // Initialize database and services
     const database = new Database(DB_PATH);
     const holdingsModel = new HoldingsModel(database);
-    const priceService = new PriceService();
+    const priceService = new EnhancedPriceService();
     const portfolioService = new PortfolioService(holdingsModel, priceService);
 
     // Initialize price update scheduler
@@ -50,7 +51,7 @@ async function startServer() {
     // Setup routes
     app.use('/api/portfolio', createPortfolioRoutes(holdingsModel, portfolioService));
     app.use('/api/search', createSearchRoutes(priceService));
-    app.use('/api/prices', createPricesRoutes(priceService));
+    app.use('/api/prices', enhancedPricesRouter);
 
     // Error handling
     app.use(notFoundHandler);

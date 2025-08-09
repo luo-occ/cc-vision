@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { ApiResponse } from '@portfolio/shared';
-import PriceService from '../services/priceService';
+import EnhancedPriceService from '../services/enhancedPriceService';
 
 const router = Router();
 
-export default function createSearchRoutes(priceService: PriceService) {
+export default function createSearchRoutes(priceService: EnhancedPriceService) {
   // Search for stocks and crypto
   router.get('/', async (req, res) => {
     try {
@@ -18,16 +18,11 @@ export default function createSearchRoutes(priceService: PriceService) {
         return res.status(400).json(response);
       }
 
-      let results: any[] = [];
-
-      if (!type || type === 'stock') {
-        const stockResults = await priceService.searchStocks(query);
-        results = results.concat(stockResults);
-      }
-
-      if (!type || type === 'crypto') {
-        const cryptoResults = await priceService.searchCrypto(query);
-        results = results.concat(cryptoResults);
+      let results = await priceService.searchAssets(query);
+      
+      // Filter by type if specified
+      if (type) {
+        results = results.filter(result => result.type === type);
       }
 
       const response: ApiResponse<typeof results> = {
