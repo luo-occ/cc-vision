@@ -53,8 +53,8 @@ export default function createPortfolioRoutes(
 
       const holding = await holdingsModel.create(holdingData);
       
-      // Try to get current price
-      await portfolioService.refreshSinglePrice(holding.symbol, holding.type);
+      // Fetch initial price for the new holding
+      await portfolioService.fetchAndUpdatePriceForNewHolding(holding.symbol, holding.type);
       
       const response: ApiResponse<typeof holding> = {
         success: true,

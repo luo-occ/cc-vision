@@ -7,13 +7,13 @@
   ],
   "scripts": {
     "dev": "turbo dev",
+    "web": "turbo dev --filter=web",
+    "api": "turbo dev --filter=api",
+    "mobile": "turbo dev --filter=mobile",
+    "web-api": "turbo dev --filter=web --filter=api",
+    "lint": "turbo lint",
     "build": "turbo build",
     "test": "turbo test",
-    "lint": "turbo lint",
-    "dev:web": "turbo dev --filter=web --filter=api",
-    "dev:webonly": "turbo dev --filter=web",
-    "dev:api": "turbo dev --filter=api",
-    "dev:mobile": "turbo dev --filter=mobile",
     "db:init": "turbo db:init --filter=api",
     "clean": "turbo clean"
   },
