@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Holding } from '@portfolio/shared';
+import { Holding } from '@/types/portfolio';
 import { formatCurrency, formatNumber, getChangeColor } from '@/lib/utils';
 import { Edit, Trash2, TrendingUp, TrendingDown } from 'lucide-react';
 import { useDeleteHolding } from '@/hooks/usePortfolio';

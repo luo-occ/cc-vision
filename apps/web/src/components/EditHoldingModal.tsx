@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Holding, UpdateHoldingRequest } from '@portfolio/shared';
+import { Holding } from '@/types/portfolio';
+import { UpdateHoldingRequest } from '@/hooks/usePortfolio';
 import { useUpdateHolding } from '@/hooks/usePortfolio';
 import { X } from 'lucide-react';
 

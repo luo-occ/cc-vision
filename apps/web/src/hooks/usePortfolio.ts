@@ -1,6 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/api';
-import { CreateHoldingRequest, UpdateHoldingRequest } from '@portfolio/shared';
+import { CreateHoldingRequest } from '@/types/portfolio';
+
+export interface UpdateHoldingRequest {
+  id?: string;
+  quantity?: number;
+  costBasis?: number;
+}
 
 export function usePortfolio() {
   return useQuery({
@@ -13,7 +19,7 @@ export function usePortfolio() {
 
 export function useAddHolding() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (holding: CreateHoldingRequest) => apiClient.addHolding(holding),
     onSuccess: () => {
@@ -24,7 +30,7 @@ export function useAddHolding() {
 
 export function useUpdateHolding() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ id, updates }: { id: string; updates: UpdateHoldingRequest }) =>
       apiClient.updateHolding(id, updates),
@@ -36,7 +42,7 @@ export function useUpdateHolding() {
 
 export function useDeleteHolding() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (id: string) => apiClient.deleteHolding(id),
     onSuccess: () => {
@@ -47,7 +53,7 @@ export function useDeleteHolding() {
 
 export function useRefreshPrices() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: () => apiClient.refreshPrices(),
     onSuccess: () => {

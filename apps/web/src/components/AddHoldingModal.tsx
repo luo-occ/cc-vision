@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CreateHoldingRequest, SearchResult } from '@portfolio/shared';
+import { CreateHoldingRequest, SearchResult } from '@/types/portfolio';
 import { useAddHolding } from '@/hooks/usePortfolio';
 import { useSearch } from '@/hooks/useSearch';
 import { X, Search } from 'lucide-react';

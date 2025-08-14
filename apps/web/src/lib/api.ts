@@ -1,11 +1,25 @@
 import { 
-  PortfolioSummary, 
+  Portfolio, 
   CreateHoldingRequest, 
-  UpdateHoldingRequest, 
-  SearchResult, 
-  AssetPrice, 
-  ApiResponse 
-} from '@portfolio/shared';
+  SearchResult
+} from '@/types/portfolio';
+
+import { UpdateHoldingRequest } from '@/hooks/usePortfolio';
+
+export interface AssetPrice {
+  symbol: string;
+  price: number;
+  change?: number;
+  changePercent?: number;
+  lastUpdated: string;
+}
+
+export interface ApiResponse<T> {
+  data: T;
+  success: boolean;
+  message?: string;
+  error?: string;
+}
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -46,8 +60,8 @@ class ApiClient {
   }
 
   // Portfolio endpoints
-  async getPortfolio(): Promise<PortfolioSummary> {
-    const response = await this.request<PortfolioSummary>('/api/portfolio');
+  async getPortfolio(): Promise<Portfolio> {
+    const response = await this.request<Portfolio>('/api/portfolio');
     if (!response.success || !response.data) {
       throw new Error(response.error || 'Failed to fetch portfolio');
     }
@@ -85,8 +99,8 @@ class ApiClient {
     }
   }
 
-  async refreshPrices(): Promise<PortfolioSummary> {
-    const response = await this.request<PortfolioSummary>('/api/portfolio/refresh', {
+  async refreshPrices(): Promise<Portfolio> {
+    const response = await this.request<Portfolio>('/api/portfolio/refresh', {
       method: 'POST',
     });
     if (!response.success || !response.data) {

@@ -1,12 +1,12 @@
 'use client';
 
-import { PortfolioSummary as PortfolioSummaryType } from '@portfolio/shared';
+import { Portfolio } from '@/types/portfolio';
 import { formatCurrency, formatPercent, getChangeColor } from '@/lib/utils';
 import { TrendingUp, TrendingDown, DollarSign, Percent } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface PortfolioSummaryProps {
-  portfolio: PortfolioSummaryType;
+  portfolio: Portfolio;
 }
 
 export function PortfolioSummary({ portfolio }: PortfolioSummaryProps) {
