@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { Account, NewAccount } from '@/types/portfolio';
 import { useCreateAccount, useUpdateAccount } from '@/hooks/useAccounts';
 
@@ -88,15 +88,7 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
   };
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>{account ? 'Edit Account' : 'Create New Account'}</CardTitle>
-        <CardDescription>
-          {account ? 'Update account information' : 'Add a new investment account'}
-        </CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Account Name</Label>
             <Input
@@ -189,8 +181,7 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
             />
             <Label htmlFor="isActive">Active</Label>
           </div>
-        </CardContent>
-        <CardFooter className="flex justify-between">
+        <div className="flex justify-between pt-4">
           {onCancel && (
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel
@@ -199,8 +190,7 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
           <Button type="submit" disabled={isLoading}>
             {isLoading ? 'Saving...' : account ? 'Update Account' : 'Create Account'}
           </Button>
-        </CardFooter>
+        </div>
       </form>
-    </Card>
   );
 }
