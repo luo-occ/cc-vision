@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { CreateHoldingRequest, SearchResult } from '@/types/portfolio';
 import { useAddHolding } from '@/hooks/usePortfolio';
 import { useSearch } from '@/hooks/useSearch';
+import { useDefaultAccount } from '@/hooks/useAccounts';
+import { AccountSelector } from '@/components/AccountSelector';
 import { X, Search } from 'lucide-react';
 
 interface AddHoldingModalProps {
@@ -15,16 +17,20 @@ export function AddHoldingModal({ onClose }: AddHoldingModalProps) {
   const [selectedAsset, setSelectedAsset] = useState<SearchResult | null>(null);
   const [quantity, setQuantity] = useState('');
   const [costBasis, setCostBasis] = useState('');
+  const [selectedAccountId, setSelectedAccountId] = useState<string>('');
 
   const { data: searchResults, isLoading: isSearching } = useSearch(searchQuery);
+  const { data: defaultAccount } = useDefaultAccount();
   const addHolding = useAddHolding();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedAsset || !quantity || !costBasis) return;
+    const accountId = selectedAccountId || defaultAccount?.id;
+    if (!selectedAsset || !quantity || !costBasis || !accountId) return;
 
     const holding: CreateHoldingRequest = {
+      accountId,
       symbol: selectedAsset.symbol,
       name: selectedAsset.name,
       type: selectedAsset.type,
@@ -45,13 +51,8 @@ export function AddHoldingModal({ onClose }: AddHoldingModalProps) {
     setSearchQuery(asset.symbol);
   };
 
-  console.log('Button clicked, disabled state:', {
-    selectedAsset: !!selectedAsset,
-    quantity: !!quantity,
-    costBasis: !!costBasis,
-    isPending: addHolding.isPending,
-    disabled: !selectedAsset || !quantity || !costBasis || addHolding.isPending,
-  });
+  const accountId = selectedAccountId || defaultAccount?.id;
+  const canSubmit = selectedAsset && quantity && costBasis && accountId && !addHolding.isPending;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -65,6 +66,16 @@ export function AddHoldingModal({ onClose }: AddHoldingModalProps) {
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-4">
+            {/* Account Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Account</label>
+              <AccountSelector
+                value={selectedAccountId}
+                onValueChange={setSelectedAccountId}
+                placeholder={defaultAccount ? `Default: ${defaultAccount.name}` : "Select account"}
+              />
+            </div>
+
             {/* Asset Search */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Search Asset</label>
@@ -169,7 +180,7 @@ export function AddHoldingModal({ onClose }: AddHoldingModalProps) {
             </button>
             <button
               type="submit"
-              disabled={!selectedAsset || !quantity || !costBasis || addHolding.isPending}
+              disabled={!canSubmit}
               className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {addHolding.isPending ? 'Adding...' : 'Add Holding'}

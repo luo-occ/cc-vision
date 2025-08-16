@@ -1,7 +1,10 @@
 import { 
   Portfolio, 
   CreateHoldingRequest, 
-  SearchResult
+  SearchResult,
+  Account,
+  NewAccount,
+  AccountUpdate
 } from '@/types/portfolio';
 
 import { UpdateHoldingRequest } from '@/hooks/usePortfolio';
@@ -117,6 +120,80 @@ class ApiClient {
     const response = await this.request<SearchResult[]>(`/api/search?${params}`);
     if (!response.success || !response.data) {
       throw new Error(response.error || 'Failed to search assets');
+    }
+    return response.data;
+  }
+
+  // Account endpoints
+  async getAccounts(isActive?: boolean): Promise<Account[]> {
+    const params = isActive !== undefined ? `?active=${isActive}` : '';
+    const response = await this.request<Account[]>(`/api/accounts${params}`);
+    if (!response.success || !response.data) {
+      throw new Error(response.error || 'Failed to fetch accounts');
+    }
+    return response.data;
+  }
+
+  async getAccount(id: string): Promise<Account> {
+    const response = await this.request<Account>(`/api/accounts/${id}`);
+    if (!response.success || !response.data) {
+      throw new Error(response.error || 'Failed to fetch account');
+    }
+    return response.data;
+  }
+
+  async createAccount(account: NewAccount): Promise<Account> {
+    const response = await this.request<Account>('/api/accounts', {
+      method: 'POST',
+      body: JSON.stringify(account),
+    });
+    if (!response.success || !response.data) {
+      throw new Error(response.error || 'Failed to create account');
+    }
+    return response.data;
+  }
+
+  async updateAccount(id: string, updates: AccountUpdate): Promise<Account> {
+    const response = await this.request<Account>(`/api/accounts/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+    if (!response.success || !response.data) {
+      throw new Error(response.error || 'Failed to update account');
+    }
+    return response.data;
+  }
+
+  async deleteAccount(id: string): Promise<void> {
+    const response = await this.request(`/api/accounts/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.success) {
+      throw new Error(response.error || 'Failed to delete account');
+    }
+  }
+
+  async getDefaultAccount(): Promise<Account> {
+    const response = await this.request<Account>('/api/accounts/default/current');
+    if (!response.success || !response.data) {
+      throw new Error(response.error || 'Failed to fetch default account');
+    }
+    return response.data;
+  }
+
+  async setDefaultAccount(id: string): Promise<void> {
+    const response = await this.request(`/api/accounts/${id}/default`, {
+      method: 'POST',
+    });
+    if (!response.success) {
+      throw new Error(response.error || 'Failed to set default account');
+    }
+  }
+
+  async getActiveAccounts(): Promise<Account[]> {
+    const response = await this.request<Account[]>('/api/accounts/active/list');
+    if (!response.success || !response.data) {
+      throw new Error(response.error || 'Failed to fetch active accounts');
     }
     return response.data;
   }

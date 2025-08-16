@@ -1,9 +1,43 @@
 export interface CreateHoldingRequest {
+  accountId: string;
   symbol: string;
   name: string;
   type: 'stock' | 'crypto';
   quantity: number;
   costBasis: number;
+}
+
+export interface Account {
+  id: string;
+  name: string;
+  accountType: 'SECURITIES' | 'CRYPTO' | 'RETIREMENT' | 'SAVINGS' | 'CHECKING';
+  currency: string;
+  group?: string;
+  isDefault: boolean;
+  isActive: boolean;
+  platformId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NewAccount {
+  name: string;
+  accountType: 'SECURITIES' | 'CRYPTO' | 'RETIREMENT' | 'SAVINGS' | 'CHECKING';
+  currency: string;
+  group?: string;
+  isDefault?: boolean;
+  isActive?: boolean;
+  platformId?: string;
+}
+
+export interface AccountUpdate {
+  name?: string;
+  accountType?: 'SECURITIES' | 'CRYPTO' | 'RETIREMENT' | 'SAVINGS' | 'CHECKING';
+  currency?: string;
+  group?: string;
+  isDefault?: boolean;
+  isActive?: boolean;
+  platformId?: string;
 }
 
 export interface SearchResult {
@@ -15,6 +49,7 @@ export interface SearchResult {
 
 export interface Holding {
   id: string;
+  accountId: string;
   symbol: string;
   name?: string;
   quantity: number;

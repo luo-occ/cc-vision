@@ -1,5 +1,40 @@
+export interface Account {
+  id: string;
+  name: string;
+  accountType: string;
+  group?: string;
+  currency: string;
+  isDefault: boolean;
+  isActive: boolean;
+  platformId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface NewAccount {
+  id?: string;
+  name: string;
+  accountType: string;
+  group?: string;
+  currency: string;
+  isDefault: boolean;
+  isActive: boolean;
+  platformId?: string;
+}
+
+export interface AccountUpdate {
+  id?: string;
+  name: string;
+  accountType: string;
+  group?: string;
+  isDefault: boolean;
+  isActive: boolean;
+  platformId?: string;
+}
+
 export interface Holding {
   id: string;
+  accountId: string;
   symbol: string;           // e.g., "AAPL", "BTC"
   name: string;            // e.g., "Apple Inc.", "Bitcoin"
   type: 'stock' | 'crypto';
@@ -21,6 +56,7 @@ export interface PortfolioSummary {
 }
 
 export interface CreateHoldingRequest {
+  accountId: string;
   symbol: string;
   name: string;
   type: 'stock' | 'crypto';

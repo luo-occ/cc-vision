@@ -1,75 +1,93 @@
+@import '@fontsource/ibm-plex-mono';
+@import '@fontsource/ibm-plex-mono/200.css';
+@import '@fontsource/ibm-plex-mono/300.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+@import '@fontsource/ibm-plex-mono/600.css';
+@import '@fontsource/ibm-plex-mono/700.css';
+@import '@fontsource/ibm-plex-mono/400-italic.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import '@fontsource/ibm-plex-mono';
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --success: 142.1 76.2% 36.3%;
-    --success-foreground: 355.7 100% 97.3%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    /* Flexoki Light Theme Variables */
+    --flexoki-bg: 48 100% 97%;
+    --flexoki-bg-2: 51 59% 95%;
+    --flexoki-ui: 51 21% 88%;
+    --flexoki-ui-2: 50 14% 83%;
+    --flexoki-ui-3: 55 10% 79%;
+    --flexoki-tx: 0 3% 6%;
+    --flexoki-tx-2: 50 3% 42%;
+    --flexoki-tx-3: 49 7% 70%;
+    --flexoki-re: 3 62% 42%;
+    --flexoki-gr: 73 84% 27%;
+    --flexoki-ye: 45 99% 34%;
+
+    /* Shadcn Theme Mapping */
+    --background: var(--flexoki-bg);
+    --foreground: var(--flexoki-tx);
+    --card: var(--flexoki-bg-2);
+    --card-foreground: var(--flexoki-tx);
+    --popover: var(--flexoki-bg);
+    --popover-foreground: var(--flexoki-tx);
+    --primary: var(--flexoki-tx);
+    --primary-foreground: var(--flexoki-bg);
+    --secondary: var(--flexoki-ui-2);
+    --secondary-foreground: var(--flexoki-tx-2);
+    --muted: var(--flexoki-ui);
+    --muted-foreground: var(--flexoki-tx-2);
+    --accent: var(--flexoki-ui);
+    --accent-foreground: var(--flexoki-tx-2);
+    --destructive: var(--flexoki-re);
+    --destructive-foreground: var(--flexoki-bg);
+    --success: var(--flexoki-gr);
+    --success-foreground: var(--flexoki-bg);
+    --warning: var(--flexoki-ye);
+    --warning-foreground: var(--flexoki-bg);
+    --border: var(--flexoki-ui);
+    --input: var(--flexoki-ui-2);
+    --ring: var(--flexoki-ui-3);
     --radius: 0.5rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --chart-6: 324 100% 50%;
-    --chart-7: 271 91% 65%;
-    --chart-8: 9 100% 64%;
-    --chart-9: 33 100% 50%;
+
+    /* Chart Colors */
+    --chart-1: 40 3% 20%;
+    --chart-2: 45 2% 33%;
+    --chart-3: 50 3% 42%;
+    --chart-4: 43 3% 52%;
+    --chart-5: 47 4% 61%;
+    --chart-6: 49 7% 70%;
+    --chart-7: 55 10% 79%;
+    --chart-8: 50 14% 83%;
+    --chart-9: 51 21% 88%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --success: 142.1 70.6% 45.3%;
-    --success-foreground: 144.9 80.4% 10%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --chart-6: 324 100% 50%;
-    --chart-7: 271 91% 65%;
-    --chart-8: 9 100% 64%;
-    --chart-9: 33 100% 50%;
+    /* Flexoki Dark Theme Variables */
+    --flexoki-bg: 0 3% 6%;
+    --flexoki-bg-2: 30 4% 11%;
+    --flexoki-ui: 30 3% 15%;
+    --flexoki-ui-2: 40 3% 20%;
+    --flexoki-ui-3: 30 3% 24%;
+    --flexoki-tx: 55 10% 79%;
+    --flexoki-tx-2: 43 3% 52%;
+    --flexoki-tx-3: 45 2% 33%;
+    --flexoki-re: 5 61% 54%;
+    --flexoki-gr: 72 46% 41%;
+    --flexoki-ye: 45 82% 45%;
+
+    /* Chart Colors */
+    --chart-1: 25 92% 72%;
+    --chart-2: 24 81% 61%;
+    --chart-3: 23 70% 51%;
+    --chart-4: 23 73% 46%;
+    --chart-5: 22 80% 41%;
+    --chart-6: 22 82% 34%;
+    --chart-7: 22 79% 25%;
+    --chart-8: 22 75% 20%;
+    --chart-9: 22 70% 15%;
   }
 }
 
@@ -79,6 +97,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
@@ -86,4 +105,17 @@
   .text-balance {
     text-wrap: balance;
   }
+}
+
+number-flow-react::part(left),
+number-flow-react::part(right),
+number-flow-react::part(left)::after,
+number-flow-react::part(right)::after,
+number-flow-react::part(symbol) {
+  padding: calc(var(--number-flow-mask-height, 0.25em) / 2) 0;
+}
+
+number-flow-react.muted-fraction::part(decimal),
+number-flow-react.muted-fraction::part(fraction) {
+  color: hsl(var(--muted-foreground));
 }

@@ -39,3 +39,4 @@ It's code located `references/wealthfolio`.
 - Update plan documentation as you go
 - Learn from existing implementations
 - Stop after 3 failed attempts and reassess
+- always use pnpm instead of npm when managing packages

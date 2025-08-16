@@ -7,11 +7,14 @@ import dotenv from 'dotenv';
 
 import Database from './models/database';
 import HoldingsModel from './models/holdings';
+import AccountsModel from './models/accounts';
+import AccountService from './services/accountService';
 import EnhancedPriceService from './services/enhancedPriceService';
 import PortfolioService from './services/portfolioService';
 import PriceUpdateScheduler from './utils/scheduler';
 
 import createPortfolioRoutes from './routes/portfolio';
+import createAccountRoutes from './routes/accounts';
 import createSearchRoutes from './routes/search';
 import createPricesRoutes from './routes/prices';
 import enhancedPricesRouter from './routes/enhancedPrices';
@@ -41,6 +44,8 @@ async function startServer() {
     // Initialize database and services
     const database = new Database(DB_PATH);
     const holdingsModel = new HoldingsModel(database);
+    const accountsModel = new AccountsModel(database);
+    const accountService = new AccountService(accountsModel);
     const priceService = new EnhancedPriceService();
     const portfolioService = new PortfolioService(holdingsModel, priceService);
 
@@ -48,8 +53,12 @@ async function startServer() {
     const scheduler = new PriceUpdateScheduler(portfolioService);
     scheduler.start();
 
+    // Ensure default account exists
+    await accountService.ensureDefaultAccount();
+
     // Setup routes
     app.use('/api/portfolio', createPortfolioRoutes(holdingsModel, portfolioService));
+    app.use('/api/accounts', createAccountRoutes(accountService));
     app.use('/api/search', createSearchRoutes(priceService));
     app.use('/api/prices', enhancedPricesRouter);
 

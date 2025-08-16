@@ -14,12 +14,13 @@ class HoldingsModel {
     const now = new Date().toISOString();
 
     const sql = `
-      INSERT INTO holdings (id, symbol, name, type, quantity, cost_basis, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO holdings (id, account_id, symbol, name, type, quantity, cost_basis, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     await this.db.run(sql, [
       id,
+      holdingData.accountId,
       holdingData.symbol.toUpperCase(),
       holdingData.name,
       holdingData.type,
@@ -32,10 +33,11 @@ class HoldingsModel {
     return this.findById(id) as Promise<Holding>;
   }
 
-  async findAll(): Promise<Holding[]> {
-    const sql = `
+  async findAll(accountId?: string): Promise<Holding[]> {
+    let sql = `
       SELECT 
         id,
+        account_id as accountId,
         symbol,
         name,
         type,
@@ -46,10 +48,18 @@ class HoldingsModel {
         created_at as createdAt,
         updated_at as updatedAt
       FROM holdings
-      ORDER BY created_at DESC
     `;
+    
+    const params: any[] = [];
+    
+    if (accountId) {
+      sql += ' WHERE account_id = ?';
+      params.push(accountId);
+    }
+    
+    sql += ' ORDER BY created_at DESC';
 
-    const rows = await this.db.all(sql);
+    const rows = await this.db.all(sql, params);
     return rows.map(this.mapRowToHolding);
   }
 
