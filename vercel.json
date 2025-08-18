@@ -1,0 +1,14 @@
+{
+  "buildCommand": "pnpm build",
+  "devCommand": "pnpm web",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://your-app-name.vercel.app/api"
+  }
+}
