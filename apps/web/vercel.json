@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm run build:web",
+  "buildCommand": "cd ../.. && pnpm run build:web-only",
   "env": {
     "NEXT_PUBLIC_API_URL": "https://cc-vision-6h8n6wies-luooccs-projects.vercel.app"
   },
