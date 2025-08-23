@@ -16,9 +16,7 @@ build/
 .env.production.local
 
 # Database
-*.db
-*.sqlite
-*.sqlite3
+# PostgreSQL data is managed in Docker volumes
 
 # Logs
 npm-debug.log*

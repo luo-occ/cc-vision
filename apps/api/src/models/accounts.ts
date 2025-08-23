@@ -21,9 +21,14 @@ class AccountsModel {
       throw new Error('Currency is required');
     }
 
+    // If this account is set as default, unset existing defaults first
+    if (accountData.isDefault) {
+      await this.db.run('UPDATE accounts SET is_default = false WHERE is_default = true');
+    }
+
     const sql = `
       INSERT INTO accounts (id, name, account_type, group_name, currency, is_default, is_active, platform_id, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     `;
 
     await this.db.run(sql, [
@@ -32,8 +37,8 @@ class AccountsModel {
       accountData.accountType || 'SECURITIES',
       accountData.group,
       accountData.currency,
-      accountData.isDefault ? 1 : 0,
-      accountData.isActive ? 1 : 0,
+      accountData.isDefault ? true : false,
+      accountData.isActive ? true : false,
       accountData.platformId,
       now,
       now
@@ -61,8 +66,8 @@ class AccountsModel {
     const params: any[] = [];
     
     if (isActive !== undefined) {
-      sql += ' WHERE is_active = ?';
-      params.push(isActive ? 1 : 0);
+      sql += ' WHERE is_active = $1';
+      params.push(isActive ? true : false);
     }
     
     sql += ' ORDER BY is_active DESC, name ASC';
@@ -85,7 +90,7 @@ class AccountsModel {
         created_at as createdAt,
         updated_at as updatedAt
       FROM accounts
-      WHERE id = ?
+      WHERE id = $1
     `;
 
     const row = await this.db.get(sql, [id]);
@@ -103,48 +108,53 @@ class AccountsModel {
 
     const fieldsToUpdate: string[] = [];
     const values: any[] = [];
+    let paramIndex = 1;
 
     if (updates.name !== undefined) {
-      fieldsToUpdate.push('name = ?');
+      fieldsToUpdate.push(`name = $${paramIndex++}`);
       values.push(updates.name);
     }
     if (updates.accountType !== undefined) {
-      fieldsToUpdate.push('account_type = ?');
+      fieldsToUpdate.push(`account_type = $${paramIndex++}`);
       values.push(updates.accountType);
     }
     if (updates.group !== undefined) {
-      fieldsToUpdate.push('group_name = ?');
+      fieldsToUpdate.push(`group_name = $${paramIndex++}`);
       values.push(updates.group);
     }
     if (updates.isDefault !== undefined) {
-      fieldsToUpdate.push('is_default = ?');
-      values.push(updates.isDefault ? 1 : 0);
+      // If setting this account as default, unset existing defaults first
+      if (updates.isDefault) {
+        await this.db.run('UPDATE accounts SET is_default = false WHERE is_default = true');
+      }
+      fieldsToUpdate.push(`is_default = $${paramIndex++}`);
+      values.push(updates.isDefault ? true : false);
     }
     if (updates.isActive !== undefined) {
-      fieldsToUpdate.push('is_active = ?');
-      values.push(updates.isActive ? 1 : 0);
+      fieldsToUpdate.push(`is_active = $${paramIndex++}`);
+      values.push(updates.isActive ? true : false);
     }
     if (updates.platformId !== undefined) {
-      fieldsToUpdate.push('platform_id = ?');
+      fieldsToUpdate.push(`platform_id = $${paramIndex++}`);
       values.push(updates.platformId);
     }
 
     if (fieldsToUpdate.length === 0) return existing;
 
-    fieldsToUpdate.push('updated_at = ?');
+    fieldsToUpdate.push(`updated_at = $${paramIndex++}`);
     values.push(new Date().toISOString());
     values.push(id);
 
-    const sql = `UPDATE accounts SET ${fieldsToUpdate.join(', ')} WHERE id = ?`;
+    const sql = `UPDATE accounts SET ${fieldsToUpdate.join(', ')} WHERE id = $${paramIndex}`;
     await this.db.run(sql, values);
 
     return this.findById(id) as Promise<Account>;
   }
 
   async delete(id: string): Promise<boolean> {
-    const sql = 'DELETE FROM accounts WHERE id = ?';
+    const sql = 'DELETE FROM accounts WHERE id = $1';
     const result = await this.db.run(sql, [id]);
-    return result.changes > 0;
+    return result.rowCount > 0;
   }
 
   async findDefault(): Promise<Account | null> {
@@ -161,7 +171,7 @@ class AccountsModel {
         created_at as createdAt,
         updated_at as updatedAt
       FROM accounts
-      WHERE is_default = 1 AND is_active = 1
+      WHERE is_default = true AND is_active = true
       LIMIT 1
     `;
 
@@ -171,10 +181,10 @@ class AccountsModel {
 
   async setDefault(id: string): Promise<void> {
     // First, unset all default accounts
-    await this.db.run('UPDATE accounts SET is_default = 0 WHERE is_default = 1');
+    await this.db.run('UPDATE accounts SET is_default = false WHERE is_default = true');
     
     // Then set the new default
-    await this.db.run('UPDATE accounts SET is_default = 1 WHERE id = ?', [id]);
+    await this.db.run('UPDATE accounts SET is_default = true WHERE id = $1', [id]);
   }
 
   private mapRowToAccount(row: any): Account {

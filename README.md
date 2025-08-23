@@ -7,7 +7,7 @@ A personal portfolio tracking application for stocks and cryptocurrencies with a
 ### Tech Stack
 - **Frontend (Web)**: Next.js 14, React 18, TypeScript, TailwindCSS
 - **Mobile (iOS)**: React Native, Expo, TypeScript
-- **Backend**: Node.js, Express, TypeScript, SQLite (for simplicity), Redis
+- **Backend**: Node.js, Express, TypeScript, PostgreSQL, Redis
 - **APIs**: Alpha Vantage (free - 25 calls/day), CoinGecko (free - 100 calls/min)
 - **Deployment**: Vercel (web), Docker (backend)
 - **Data Strategy**: Hourly automated updates + manual refresh on app open
@@ -89,14 +89,14 @@ stock-crypto-tracker/
 - Docker and Docker Compose
 - Expo CLI (for mobile development)
 - Redis (or use Docker)
-- SQLite (lightweight, file-based database)
+- PostgreSQL (or use Docker)
 
 ### Environment Variables
 Create `.env` files in each app directory:
 
 **apps/api/.env**
 ```env
-DATABASE_PATH=./portfolio.db  # SQLite database file
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/portfolio  # PostgreSQL connection
 REDIS_URL=redis://localhost:6379
 ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key
 COINGECKO_API_KEY=your_coingecko_key  # Optional for higher limits
@@ -125,13 +125,10 @@ EXPO_PUBLIC_API_URL=http://localhost:3001
 
 2. **Start development services**
    ```bash
-   # Start Redis only
-   docker-compose up -d redis
+   # Start PostgreSQL and Redis
+   docker-compose up -d
    
-   # Initialize SQLite database
-   npm run db:init
-   
-   # Start all applications
+   # Start all applications (database tables auto-created)
    npm run dev
    ```
 
@@ -180,8 +177,8 @@ docker run -p 3001:3001 --env-file .env stock-tracker-api
 ```
 
 ### Database
-- **SQLite**: Simple file-based database, perfect for personal use
-- **Backup**: Just copy the `portfolio.db` file
+- **PostgreSQL**: Robust relational database with Docker support
+- **Backup**: Use `pg_dump` or Docker volume backups
 
 ## 🔧 API Endpoints
 
@@ -280,13 +277,13 @@ MIT License - see LICENSE file for details
 
 ### Personal Usage Optimizations
 - **No Authentication**: Simplified for personal use only
-- **SQLite Database**: Lightweight, file-based storage
+- **PostgreSQL Database**: Robust, production-ready storage
 - **Free APIs Only**: Designed to work within free tier limits
 - **Smart Caching**: Minimizes API calls while keeping data fresh
 - **Hourly Updates**: Background updates + manual refresh on app open
 
 ### Development Considerations
 - **API Rate Limits**: 25 stock calls/day max (Alpha Vantage)
-- **Data Backup**: Copy `portfolio.db` file for backup
+- **Data Backup**: Use Docker volumes or `pg_dump` for backups
 - **Environment Variables**: Keep API keys secure
 - **Mobile Testing**: Use Expo for easy iOS testing

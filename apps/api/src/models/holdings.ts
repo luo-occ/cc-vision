@@ -15,7 +15,7 @@ class HoldingsModel {
 
     const sql = `
       INSERT INTO holdings (id, account_id, symbol, name, type, quantity, cost_basis, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     `;
 
     await this.db.run(sql, [
@@ -53,7 +53,7 @@ class HoldingsModel {
     const params: any[] = [];
     
     if (accountId) {
-      sql += ' WHERE account_id = ?';
+      sql += ' WHERE account_id = $1';
       params.push(accountId);
     }
     
@@ -67,6 +67,7 @@ class HoldingsModel {
     const sql = `
       SELECT 
         id,
+        account_id as accountId,
         symbol,
         name,
         type,
@@ -77,7 +78,7 @@ class HoldingsModel {
         created_at as createdAt,
         updated_at as updatedAt
       FROM holdings
-      WHERE id = ?
+      WHERE id = $1
     `;
 
     const row = await this.db.get(sql, [id]);
@@ -92,22 +93,22 @@ class HoldingsModel {
     const values: any[] = [];
 
     if (updates.quantity !== undefined) {
-      fieldsToUpdate.push('quantity = ?');
+      fieldsToUpdate.push(`quantity = $${values.length + 1}`);
       values.push(updates.quantity);
     }
 
     if (updates.costBasis !== undefined) {
-      fieldsToUpdate.push('cost_basis = ?');
+      fieldsToUpdate.push(`cost_basis = $${values.length + 1}`);
       values.push(updates.costBasis);
     }
 
     if (fieldsToUpdate.length === 0) return existing;
 
-    fieldsToUpdate.push('updated_at = ?');
+    fieldsToUpdate.push(`updated_at = $${values.length + 1}`);
     values.push(new Date().toISOString());
     values.push(id);
 
-    const sql = `UPDATE holdings SET ${fieldsToUpdate.join(', ')} WHERE id = ?`;
+    const sql = `UPDATE holdings SET ${fieldsToUpdate.join(', ')} WHERE id = $${values.length + 1}`;
     await this.db.run(sql, values);
 
     return this.findById(id) as Promise<Holding>;
@@ -116,15 +117,15 @@ class HoldingsModel {
   async updatePrice(symbol: string, price: number): Promise<void> {
     const sql = `
       UPDATE holdings 
-      SET current_price = ?, last_updated = ?
-      WHERE symbol = ?
+      SET current_price = $1, last_updated = $2
+      WHERE symbol = $3
     `;
 
     await this.db.run(sql, [price, new Date().toISOString(), symbol.toUpperCase()]);
   }
 
   async delete(id: string): Promise<boolean> {
-    const sql = 'DELETE FROM holdings WHERE id = ?';
+    const sql = 'DELETE FROM holdings WHERE id = $1';
     const result = await this.db.run(sql, [id]);
     return result.changes > 0;
   }
@@ -132,6 +133,7 @@ class HoldingsModel {
   private mapRowToHolding(row: any): Holding {
     return {
       id: row.id,
+      accountId: row.accountId,
       symbol: row.symbol,
       name: row.name,
       type: row.type,

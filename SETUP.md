@@ -22,7 +22,7 @@ cp apps/api/.env.example apps/api/.env
 Edit `apps/api/.env` and add your API keys:
 
 ```env
-DATABASE_PATH=./portfolio.db
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/portfolio
 REDIS_URL=redis://localhost:6379
 ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key_here
 COINGECKO_API_KEY=your_coingecko_key_here  # Optional
@@ -55,21 +55,20 @@ cp apps/mobile/.env.example apps/mobile/.env
 - The free tier works without a key
 - For higher limits, get a key at https://www.coingecko.com/en/api
 
-### 4. Start Redis
+### 4. Start PostgreSQL and Redis
 
 ```bash
-# Using Docker
+# Using Docker (recommended)
 docker-compose up -d
 
-# OR install Redis locally and start it
-redis-server
+# OR install locally and start services
+# PostgreSQL: brew services start postgresql
+# Redis: redis-server
 ```
 
-### 5. Initialize Database
+### 5. Database Setup
 
-```bash
-pnpm run db:init
-```
+The database tables are automatically created when the API server starts. No manual initialization is needed.
 
 ### 6. Start All Applications
 
@@ -99,7 +98,7 @@ This will start:
 pnpm run dev:api
 
 # Web app only
-pnpm run dev:web
+pnpm run web
 
 # Mobile app only
 pnpm run dev:mobile
@@ -138,9 +137,11 @@ redis-cli ping
 ### Database Issues
 
 ```bash
-# Reinitialize database
-rm apps/api/portfolio.db
-pnpm run db:init
+# Restart PostgreSQL and let API recreate tables
+docker-compose restart postgres
+
+# OR check PostgreSQL connection
+psql -h localhost -U postgres -d portfolio
 ```
 
 ### Mobile App Issues
@@ -207,10 +208,10 @@ docker run -p 3001:3001 --env-file .env portfolio-api
                     │
     ┌───────────────┼───────────────┐
     │               │               │
-┌───▼────┐    ┌────▼────┐    ┌────▼────┐
-│SQLite  │    │ Redis   │    │External │
-│Database│    │ Cache   │    │  APIs   │
-└────────┘    └─────────┘    └─────────┘
+┌───▼───────┐    ┌────▼────┐    ┌────▼────┐
+│PostgreSQL │    │ Redis   │    │External │
+│ Database  │    │ Cache   │    │  APIs   │
+└───────────┘    └─────────┘    └─────────┘
 ```
 
 ## Support

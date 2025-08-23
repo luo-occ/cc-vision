@@ -9,11 +9,6 @@ class AccountService {
   }
 
   async createAccount(accountData: NewAccount): Promise<Account> {
-    // If this is set as default, unset any existing default
-    if (accountData.isDefault) {
-      await this.accountsModel.setDefault('');
-    }
-
     return await this.accountsModel.create(accountData);
   }
 
@@ -28,11 +23,6 @@ class AccountService {
   async updateAccount(id: string, updates: AccountUpdate): Promise<Account | null> {
     const existing = await this.accountsModel.findById(id);
     if (!existing) return null;
-
-    // If this is being set as default, unset any existing default
-    if (updates.isDefault && !existing.isDefault) {
-      await this.accountsModel.setDefault('');
-    }
 
     return await this.accountsModel.update(id, updates);
   }

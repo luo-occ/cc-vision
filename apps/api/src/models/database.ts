@@ -61,14 +61,26 @@ class Database {
   async initializeTables(): Promise<void> {
     const client = await this.getClient();
     try {
+      // Enable UUID extension
+      await client.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
+      
+      // Drop existing tables to recreate with correct schema
+      await client.query('DROP TABLE IF EXISTS holdings CASCADE');
+      await client.query('DROP TABLE IF EXISTS accounts CASCADE');
+      await client.query('DROP TABLE IF EXISTS price_history CASCADE');
+      
       // Create accounts table
       await client.query(`
-        CREATE TABLE IF NOT EXISTS accounts (
-          id SERIAL PRIMARY KEY,
+        CREATE TABLE accounts (
+          id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
           name VARCHAR(255) NOT NULL,
-          type VARCHAR(50) DEFAULT 'brokerage',
+          account_type VARCHAR(50) DEFAULT 'SECURITIES',
+          group_name VARCHAR(255),
           currency VARCHAR(3) DEFAULT 'USD',
           balance DECIMAL(15,2) DEFAULT 0,
+          is_default BOOLEAN DEFAULT FALSE,
+          is_active BOOLEAN DEFAULT TRUE,
+          platform_id VARCHAR(100),
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
@@ -76,15 +88,16 @@ class Database {
 
       // Create holdings table
       await client.query(`
-        CREATE TABLE IF NOT EXISTS holdings (
-          id SERIAL PRIMARY KEY,
-          account_id INTEGER REFERENCES accounts(id) ON DELETE CASCADE,
+        CREATE TABLE holdings (
+          id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+          account_id UUID REFERENCES accounts(id) ON DELETE CASCADE,
           symbol VARCHAR(50) NOT NULL,
           name VARCHAR(255),
           type VARCHAR(50) DEFAULT 'stock',
           quantity DECIMAL(15,6) NOT NULL,
-          avg_price DECIMAL(15,6),
+          cost_basis DECIMAL(15,6),
           current_price DECIMAL(15,6),
+          last_updated TIMESTAMP,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
@@ -92,7 +105,7 @@ class Database {
 
       // Create price history table
       await client.query(`
-        CREATE TABLE IF NOT EXISTS price_history (
+        CREATE TABLE price_history (
           id SERIAL PRIMARY KEY,
           symbol VARCHAR(50) NOT NULL,
           price DECIMAL(15,6) NOT NULL,

@@ -12,9 +12,7 @@ dist/
 *.tsbuildinfo
 
 # Database files
-*.db
-*.sqlite
-*.sqlite3
+# PostgreSQL data is managed in Docker volumes
 
 # OS generated files
 .DS_Store

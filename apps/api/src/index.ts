@@ -25,7 +25,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const DB_PATH = process.env.DATABASE_PATH || './portfolio.db';
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://localhost:5432/portfolio';
 
 // Middleware
 app.use(helmet());
@@ -42,7 +42,11 @@ app.get('/health', (req, res) => {
 async function startServer() {
   try {
     // Initialize database and services
-    const database = new Database(DB_PATH);
+    const database = new Database(DATABASE_URL);
+    
+    // Initialize database tables
+    await database.initializeTables();
+    
     const holdingsModel = new HoldingsModel(database);
     const accountsModel = new AccountsModel(database);
     const accountService = new AccountService(accountsModel);
@@ -69,7 +73,7 @@ async function startServer() {
     // Start server
     app.listen(PORT, () => {
       console.log(`🚀 Portfolio API server running on port ${PORT}`);
-      console.log(`📊 Database: ${DB_PATH}`);
+      console.log(`📊 Database: ${DATABASE_URL}`);
       console.log(`⏰ Price updates: Every hour`);
     });
 
