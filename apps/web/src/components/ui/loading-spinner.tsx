@@ -1,30 +1,30 @@
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { ModernSpinner } from "./modern-spinner";
 
 interface LoadingSpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: "sm" | "md" | "lg";
+  variant?: "dots" | "pulse" | "bars" | "ring" | "gradient";
   text?: string;
 }
 
-const sizeVariants = {
-  sm: "h-4 w-4",
-  md: "h-6 w-6", 
-  lg: "h-8 w-8"
-};
-
 export function LoadingSpinner({ 
   size = "md", 
+  variant = "gradient",
   text, 
   className, 
   ...props 
 }: LoadingSpinnerProps) {
   return (
     <div 
-      className={cn("flex items-center justify-center gap-2", className)} 
+      className={cn("flex flex-col items-center justify-center gap-3", className)} 
       {...props}
     >
-      <Loader2 className={cn("animate-spin", sizeVariants[size])} />
-      {text && <span className="text-sm text-muted-foreground">{text}</span>}
+      <ModernSpinner size={size} variant={variant} />
+      {text && (
+        <span className="text-sm text-muted-foreground animate-fade-in-delay">
+          {text}
+        </span>
+      )}
     </div>
   );
 }
