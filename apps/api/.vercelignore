@@ -1,0 +1,11 @@
+node_modules
+src
+dist
+*.ts
+tsconfig.json
+.env
+.env.local
+.git
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
