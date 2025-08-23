@@ -1,4 +1,4 @@
-// Vercel serverless function wrapper for the API
+// Vercel serverless function for the portfolio API
 // This file provides a simple API for the portfolio app
 
 module.exports = async (req, res) => {
