@@ -1,8 +1,36 @@
 {
-  "name": "cc-vision-api",
-  "version": "1.0.0",
-  "description": "Portfolio API - Serverless Functions",
+  "name": "stock-crypto-tracker",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "web": "turbo dev --filter=web --filter=api",
+    "api": "turbo dev --filter=api",
+    "mobile": "turbo dev --filter=mobile",
+    "web-only": "turbo dev --filter=web",
+    "lint": "turbo lint",
+    "build": "turbo build",
+    "build:vercel": "pnpm run build:shared && pnpm run build:api && pnpm run build:web",
+    "build:shared": "cd packages/shared && pnpm run build",
+    "build:api": "cd apps/api && pnpm run build",
+    "build:web": "cd apps/web && pnpm run build",
+    "test": "turbo test",
+    "db:init": "turbo db:init --filter=api",
+    "clean": "turbo clean"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "turbo": "^1.13.4",
+    "typescript": "^5.5.3"
+  },
   "engines": {
     "node": "20.x"
+  },
+  "packageManager": "pnpm@8.0.0",
+  "dependencies": {
+    "@radix-ui/react-tabs": "^1.1.12"
   }
 }
