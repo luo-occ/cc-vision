@@ -3,7 +3,7 @@
   "buildCommand": "npm run build",
   "installCommand": "npm install",
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://cc-vision-nagvfh8ye-luooccs-projects.vercel.app/api"
+    "NEXT_PUBLIC_API_URL": "https://cc-vision-6h8n6wies-luooccs-projects.vercel.app"
   },
   "github": {
     "autoAlias": false
