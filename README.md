@@ -9,12 +9,13 @@ A personal portfolio tracking application for stocks and cryptocurrencies with a
 - **Mobile (iOS)**: React Native, Expo, TypeScript
 - **Backend**: Node.js, Express, TypeScript, PostgreSQL, Redis
 - **APIs**: Alpha Vantage (free - 25 calls/day), CoinGecko (free - 100 calls/min)
-- **Deployment**: Vercel (web), Docker (backend)
+- **Deployment**: Vercel (web & API as separate projects)
+- **Build System**: npm workspaces (simplified from TurboRepo)
 - **Data Strategy**: Hourly automated updates + manual refresh on app open
 
 ### Project Structure
 ```
-stock-crypto-tracker/
+cc-vision/
 ├── apps/
 │   ├── web/                 # Next.js web application
 │   │   ├── src/
@@ -24,43 +25,32 @@ stock-crypto-tracker/
 │   │   │   ├── lib/         # Utilities and API clients
 │   │   │   └── types/       # TypeScript type definitions
 │   │   ├── public/          # Static assets
+│   │   ├── vercel.json      # Vercel deployment config
 │   │   └── package.json
 │   ├── mobile/              # React Native application
+│   │   ├── app/             # Expo Router pages
 │   │   ├── src/
-│   │   │   ├── screens/     # Screen components
 │   │   │   ├── components/  # Reusable components
-│   │   │   ├── navigation/  # Navigation setup
 │   │   │   ├── services/    # API services
-│   │   │   └── hooks/       # Custom hooks
+│   │   │   ├── hooks/       # Custom hooks
+│   │   │   └── utils/       # Utility functions
 │   │   ├── app.json         # Expo configuration
 │   │   └── package.json
-│   └── api/                 # Node.js backend
+│   └── api/                 # Node.js Express backend
 │       ├── src/
-│       │   ├── routes/      # API routes
-│       │   ├── services/    # Business logic
-│       │   ├── models/      # Database models
+│       │   ├── api/         # Main API router
+│       │   ├── routes/      # Feature-specific routes
+│       │   ├── services/    # Business logic services
+│       │   ├── models/      # Database models (PostgreSQL)
+│       │   ├── providers/   # External API providers
 │       │   ├── middleware/  # Express middleware
+│       │   ├── types/       # TypeScript definitions
 │       │   └── utils/       # Utility functions
-│       ├── Dockerfile
+│       ├── dist/            # Compiled JavaScript
+│       ├── tsconfig.json    # TypeScript configuration
 │       └── package.json
-├── packages/
-│   ├── shared/              # Shared utilities and types
-│   │   ├── src/
-│   │   │   ├── types/       # Common TypeScript types
-│   │   │   ├── utils/       # Shared utility functions
-│   │   │   └── constants/   # Application constants
-│   │   └── package.json
-│   ├── ui/                  # Shared UI components
-│   │   ├── src/
-│   │   │   └── components/  # Reusable UI components
-│   │   └── package.json
-│   └── database/            # Database schemas and migrations
-│       ├── migrations/      # SQL migration files
-│       ├── schemas/         # Database schema definitions
-│       └── package.json
-├── docker-compose.yml       # Local development environment
-├── turbo.json              # Turborepo configuration
-└── package.json            # Root package.json
+├── docker-compose.yml       # PostgreSQL & Redis for development
+└── package.json            # Root package.json (npm workspaces)
 ```
 
 ## 🚀 Features
@@ -85,7 +75,7 @@ stock-crypto-tracker/
 ## 🛠️ Development Setup
 
 ### Prerequisites
-- Node.js 18+ and npm/yarn
+- Node.js 20+ and npm
 - Docker and Docker Compose
 - Expo CLI (for mobile development)
 - Redis (or use Docker)
@@ -119,7 +109,7 @@ EXPO_PUBLIC_API_URL=http://localhost:3001
 1. **Clone and install dependencies**
    ```bash
    git clone <repository-url>
-   cd stock-crypto-tracker
+   cd cc-vision
    npm install
    ```
 
@@ -164,16 +154,39 @@ npx expo build:ios
 
 ## 🚢 Deployment
 
-### Web App (Vercel)
-1. Connect your repository to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on push to main
+### Current Architecture
+The project is deployed as **two separate Vercel projects**:
 
-### Backend (Docker)
+1. **Web App**: `cc-vision-web` (Next.js frontend)
+2. **API**: `cc-vision-api` (Node.js backend as serverless functions)
+
+### Web App Deployment (Vercel)
+1. Connect your repository to Vercel
+2. Set build root directory to `apps/web`
+3. Set environment variables:
+   ```env
+   NEXT_PUBLIC_API_URL=https://your-api-deployment.vercel.app
+   ```
+4. Deploy automatically on push to main
+
+### API Deployment (Vercel)
+1. Create separate Vercel project for API
+2. Set build root directory to `apps/api`  
+3. Set environment variables in Vercel dashboard:
+   ```env
+   DATABASE_URL=your-postgresql-connection-string
+   REDIS_URL=your-redis-connection-string
+   ALPHA_VANTAGE_API_KEY=your-alpha-vantage-key
+   COINGECKO_API_KEY=your-coingecko-key
+   ```
+4. Deploy automatically on API changes
+
+### Alternative: Docker Deployment
 ```bash
-# Build and deploy to your server
-docker build -t stock-tracker-api ./apps/api
-docker run -p 3001:3001 --env-file .env stock-tracker-api
+# Build and deploy API to your server
+cd apps/api
+docker build -t cc-vision-api .
+docker run -p 3001:3001 --env-file .env cc-vision-api
 ```
 
 ### Database
@@ -200,9 +213,10 @@ docker run -p 3001:3001 --env-file .env stock-tracker-api
 ```typescript
 interface Holding {
   id: string;
+  accountId: string;       // Account this holding belongs to
   symbol: string;           // e.g., "AAPL", "BTC"
-  name: string;            // e.g., "Apple Inc.", "Bitcoin"
-  type: 'stock' | 'crypto';
+  name?: string;           // e.g., "Apple Inc.", "Bitcoin"
+  type: 'stock' | 'crypto' | 'etf' | 'mutual_fund' | 'bond' | 'cash';
   quantity: number;        // Number of shares/coins owned
   costBasis: number;       // Average cost per share/coin
   currentPrice?: number;   // Latest price (updated hourly)

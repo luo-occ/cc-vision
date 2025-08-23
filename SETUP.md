@@ -8,7 +8,7 @@ Follow these steps to get your personal stock and crypto portfolio tracker runni
 
 ```bash
 # Install all dependencies
-pnpm install
+npm install
 ```
 
 ### 2. Set Up Environment Variables
@@ -70,11 +70,22 @@ docker-compose up -d
 
 The database tables are automatically created when the API server starts. No manual initialization is needed.
 
+**Available Database Tables:**
+- `accounts` - User accounts for organizing holdings
+- `holdings` - Stock and crypto holdings with quantities and cost basis
+- `price_history` - Historical price data for caching
+
+The API includes full PostgreSQL support with:
+- Account management (create, update, delete accounts)
+- Holdings management (add, edit, remove positions)
+- Real-time price fetching from multiple providers
+- Automated price updates and caching
+
 ### 6. Start All Applications
 
 ```bash
 # Start all apps simultaneously
-pnpm run dev
+npm run dev
 ```
 
 This will start:
@@ -95,13 +106,13 @@ This will start:
 
 ```bash
 # API server only
-pnpm run dev:api
+npm run dev:api
 
 # Web app only
-pnpm run web
+npm run dev:web
 
 # Mobile app only
-pnpm run dev:mobile
+npm run dev:mobile
 ```
 
 ## Adding Your First Holdings
@@ -151,27 +162,46 @@ psql -h localhost -U postgres -d portfolio
 
 ## Production Deployment
 
+### Current Architecture
+The project uses **separate Vercel deployments** for optimal performance:
+
 ### Web App (Vercel)
+1. Create a new Vercel project
+2. Set **Root Directory** to `apps/web`
+3. Set environment variables:
+   ```env
+   NEXT_PUBLIC_API_URL=https://your-api-deployment.vercel.app
+   ```
+4. Deploy automatically on push
 
-1. Connect your GitHub repo to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically
+### API Server (Vercel)
+1. Create a separate Vercel project for the API
+2. Set **Root Directory** to `apps/api`
+3. Set environment variables in Vercel dashboard:
+   ```env
+   DATABASE_URL=postgresql://user:pass@host:port/dbname
+   REDIS_URL=redis://user:pass@host:port
+   ALPHA_VANTAGE_API_KEY=your_key_here
+   COINGECKO_API_KEY=your_key_here
+   ```
+4. The API will deploy as serverless functions
 
-### API Server (Docker)
-
+### Alternative: Docker Deployment
 ```bash
 cd apps/api
-docker build -t portfolio-api .
-docker run -p 3001:3001 --env-file .env portfolio-api
+docker build -t cc-vision-api .
+docker run -p 3001:3001 --env-file .env cc-vision-api
 ```
 
 ## Features Overview
 
 ### ✅ Portfolio Management
 
+- Multi-account support (Securities, Cash, Crypto, etc.)
 - Add/edit/remove stock and crypto holdings
-- Track quantity and cost basis
-- Real-time P&L calculations
+- Support for stocks, crypto, ETFs, mutual funds, bonds
+- Track quantity and cost basis per holding
+- Real-time P&L calculations with current market prices
 
 ### ✅ Price Updates
 
@@ -185,11 +215,14 @@ docker run -p 3001:3001 --env-file .env portfolio-api
 - Native iOS mobile app
 - Shared data between platforms
 
-### ✅ Free API Usage
+### ✅ Market Data & APIs
 
-- Alpha Vantage: 25 stock calls/day
-- CoinGecko: 100 crypto calls/minute
-- Efficient caching minimizes API usage
+- **Alpha Vantage**: Stock market data (25 calls/day free)
+- **CoinGecko**: Cryptocurrency data (100 calls/minute free)
+- **Yahoo Finance**: Backup data source (free, no key required)
+- Multi-provider fallback system for reliability
+- Smart caching with Redis (5-minute price cache)
+- Historical price data and search functionality
 
 ## Architecture
 
