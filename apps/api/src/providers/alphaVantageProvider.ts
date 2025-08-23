@@ -5,7 +5,7 @@ export class AlphaVantageProvider implements MarketDataProvider {
   name = 'Alpha Vantage';
   priority = 2;
   enabled: boolean;
-  private readonly apiKey: string;
+  private apiKey: string;
   private readonly baseUrl = 'https://www.alphavantage.co/query';
   private lastCallTime = 0;
   private readonly minCallInterval = 12000; // 12 seconds between calls (5 calls/minute)

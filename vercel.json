@@ -1,14 +1,18 @@
 {
-  "buildCommand": "pnpm build",
-  "devCommand": "pnpm web",
-  "installCommand": "pnpm install",
-  "framework": "nextjs",
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs18.x"
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node"
     }
-  },
-  "env": {
-    "NEXT_PUBLIC_API_URL": "https://your-app-name.vercel.app/api"
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
+    }
+  ],
+  "github": {
+    "autoAlias": false
   }
 }

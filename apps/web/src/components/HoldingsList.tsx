@@ -79,7 +79,7 @@ export function HoldingsList({ holdings, showConvertedValues = false }: Holdings
     if (searchTerm) {
       filtered = filtered.filter(holding =>
         holding.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        holding.name.toLowerCase().includes(searchTerm.toLowerCase())
+        (holding.name && holding.name.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 

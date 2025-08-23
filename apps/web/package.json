@@ -12,7 +12,6 @@
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.2.6",
     "@hookform/resolvers": "^5.2.1",
-    "@portfolio/shared": "workspace:*",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-avatar": "^1.1.3",

@@ -96,7 +96,7 @@ class PortfolioService {
       
       if (price) {
         await this.holdingsModel.updatePrice(symbol, price.price);
-        console.log(`Set initial price for ${symbol}: $${price.price} (${price.changePercent24h >= 0 ? '+' : ''}${price.changePercent24h?.toFixed(2)}%)`);
+        console.log(`Set initial price for ${symbol}: $${price.price} (${price.changePercent24h !== undefined ? (price.changePercent24h >= 0 ? '+' : '') + price.changePercent24h.toFixed(2) + '%' : 'N/A'})`);
       } else {
         console.warn(`Could not fetch initial price for ${symbol}`);
       }

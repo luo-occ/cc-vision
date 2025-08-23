@@ -27,7 +27,7 @@ export class CoinGeckoProvider implements MarketDataProvider {
   name = 'CoinGecko';
   priority = 3;
   enabled: boolean;
-  private readonly apiKey?: string;
+  private apiKey?: string;
   private readonly baseUrl = 'https://api.coingecko.com/api/v3';
   private lastCallTime = 0;
   private readonly minCallInterval = 1000; // 1 second between calls for free tier

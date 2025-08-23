@@ -13,6 +13,10 @@
     "web-only": "turbo dev --filter=web",
     "lint": "turbo lint",
     "build": "turbo build",
+    "build:vercel": "pnpm run build:shared && pnpm run build:api && pnpm run build:web",
+    "build:shared": "cd packages/shared && pnpm run build",
+    "build:api": "cd apps/api && pnpm run build",
+    "build:web": "cd apps/web && pnpm run build",
     "test": "turbo test",
     "db:init": "turbo db:init --filter=api",
     "clean": "turbo clean"
@@ -23,7 +27,7 @@
     "typescript": "^5.5.3"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "20.x"
   },
   "packageManager": "pnpm@8.0.0",
   "dependencies": {
