@@ -6,21 +6,15 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo dev",
-    "web": "turbo dev --filter=web --filter=api",
-    "api": "turbo dev --filter=api",
-    "mobile": "turbo dev --filter=mobile",
-    "web-only": "turbo dev --filter=web",
-    "lint": "turbo lint",
-    "build": "turbo build --filter=web",
-    "build:vercel": "pnpm run build:shared && pnpm run build:api && pnpm run build:web",
+    "dev": "echo 'Use specific dev commands: dev:web, dev:api, dev:mobile'",
+    "dev:web": "cd apps/web && pnpm run dev",
+    "dev:api": "cd apps/api && pnpm run dev",
+    "dev:mobile": "cd apps/mobile && pnpm run dev",
+    "build": "echo 'Use specific build commands: build:web, build:api, build:shared'",
     "build:shared": "cd packages/shared && pnpm run build",
     "build:api": "cd apps/api && pnpm run build",
     "build:web": "cd apps/web && pnpm run build",
-    "build:web-only": "cd apps/web && pnpm run build",
-    "test": "turbo test",
-    "db:init": "turbo db:init --filter=api",
-    "clean": "turbo clean"
+    "clean": "rm -rf node_modules && rm -rf apps/*/node_modules && rm -rf packages/*/node_modules"
   },
   "devDependencies": {
     "@types/node": "^20.14.9",

@@ -2,6 +2,9 @@
   "name": "cc-vision-api",
   "version": "1.0.0",
   "description": "Portfolio API - Serverless Functions",
+  "scripts": {
+    "build": "echo 'API build completed - using serverless functions'"
+  },
   "engines": {
     "node": "20.x"
   }
