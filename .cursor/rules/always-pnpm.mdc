@@ -1,5 +1,0 @@
----
-description: always use pnpm when handling
-globs:
-alwaysApply: false
----

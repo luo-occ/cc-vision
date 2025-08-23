@@ -1,32 +1,22 @@
 {
   "name": "stock-crypto-tracker",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
     "dev": "echo 'Use specific dev commands: dev:web, dev:api, dev:mobile'",
-    "dev:web": "cd apps/web && pnpm run dev",
-    "dev:api": "cd apps/api && pnpm run dev",
-    "dev:mobile": "cd apps/mobile && pnpm run dev",
+    "dev:web": "cd apps/web && npm run dev",
+    "dev:api": "cd apps/api && npm run dev", 
+    "dev:mobile": "cd apps/mobile && npm run dev",
     "build": "echo 'Use specific build commands: build:web, build:api, build:shared'",
-    "build:shared": "cd packages/shared && pnpm run build",
-    "build:api": "cd apps/api && pnpm run build",
-    "build:web": "cd apps/web && pnpm run build",
+    "build:shared": "cd packages/shared && npm run build",
+    "build:api": "cd apps/api && npm run build",
+    "build:web": "cd apps/web && npm run build",
     "clean": "rm -rf node_modules && rm -rf apps/*/node_modules && rm -rf packages/*/node_modules"
   },
   "devDependencies": {
     "@types/node": "^20.14.9",
-    "next": "14.2.5",
-    "turbo": "^1.13.4",
     "typescript": "^5.5.3"
   },
   "engines": {
     "node": "20.x"
-  },
-  "packageManager": "pnpm@9.12.0",
-  "dependencies": {
-    "@radix-ui/react-tabs": "^1.1.12"
   }
 }
