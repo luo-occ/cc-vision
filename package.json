@@ -12,7 +12,7 @@
     "mobile": "turbo dev --filter=mobile",
     "web-only": "turbo dev --filter=web",
     "lint": "turbo lint",
-    "build": "turbo build",
+    "build": "turbo build --filter=web",
     "build:vercel": "pnpm run build:shared && pnpm run build:api && pnpm run build:web",
     "build:shared": "cd packages/shared && pnpm run build",
     "build:api": "cd apps/api && pnpm run build",
