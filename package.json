@@ -17,7 +17,6 @@
     "build:shared": "cd packages/shared && pnpm run build",
     "build:api": "cd apps/api && pnpm run build",
     "build:web": "cd apps/web && pnpm run build",
-    "build:web-only": "turbo build --filter=web",
     "test": "turbo test",
     "db:init": "turbo db:init --filter=api",
     "clean": "turbo clean"
