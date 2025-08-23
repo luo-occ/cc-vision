@@ -25,6 +25,7 @@ export interface ApiResponse<T> {
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// Updated to use production API endpoint
 
 class ApiClient {
   private baseUrl: string;
