@@ -6,7 +6,7 @@
 echo "🔍 Checking if cc-vision-api build should be skipped..."
 
 # Check if any API-related files changed
-if git diff --quiet HEAD^ HEAD -- api/ apps/api/ packages/shared/; then
+if git diff --quiet HEAD^ HEAD -- ../../api/ ./ ../../packages/shared/; then
   echo "🚫 No API changes detected, skipping cc-vision-api build"
   exit 0
 else

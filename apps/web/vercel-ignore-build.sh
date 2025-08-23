@@ -6,7 +6,7 @@
 echo "🔍 Checking if web app build should be skipped..."
 
 # Check if any web app related files changed
-if git diff --quiet HEAD^ HEAD -- apps/web/ packages/shared/; then
+if git diff --quiet HEAD^ HEAD -- ./ ../../packages/shared/; then
   echo "🚫 No web app changes detected, skipping build"
   exit 0
 else
