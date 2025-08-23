@@ -4,6 +4,7 @@ import { Portfolio } from '@/types/portfolio';
 import { formatCurrency, formatPercent, getChangeColor } from '@/lib/utils';
 import { TrendingUp, TrendingDown, DollarSign, Percent } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { AnimatedNumber } from '@/components/ui/animated-number';
 
 interface PortfolioSummaryProps {
   portfolio: Portfolio;
@@ -22,9 +23,13 @@ export function PortfolioSummary({ portfolio }: PortfolioSummaryProps) {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-muted-foreground">Total Value</p>
-              <p className="text-2xl font-bold text-foreground font-mono">
-                {formatCurrency(portfolio.totalValue)}
-              </p>
+              <div className="text-2xl font-bold text-foreground font-mono">
+                <AnimatedNumber 
+                  value={portfolio.totalValue} 
+                  format="currency"
+                  duration={800}
+                />
+              </div>
             </div>
           </div>
         </CardContent>
@@ -38,9 +43,13 @@ export function PortfolioSummary({ portfolio }: PortfolioSummaryProps) {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-muted-foreground">Total Cost</p>
-              <p className="text-2xl font-bold text-foreground font-mono">
-                {formatCurrency(portfolio.totalCost)}
-              </p>
+              <div className="text-2xl font-bold text-foreground font-mono">
+                <AnimatedNumber 
+                  value={portfolio.totalCost} 
+                  format="currency"
+                  duration={800}
+                />
+              </div>
             </div>
           </div>
         </CardContent>
@@ -58,10 +67,14 @@ export function PortfolioSummary({ portfolio }: PortfolioSummaryProps) {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-muted-foreground">Gain/Loss</p>
-              <p className={`text-2xl font-bold font-mono ${getChangeColor(portfolio.totalGainLoss)}`}>
-                {portfolio.totalGainLoss >= 0 ? '+' : ''}
-                {formatCurrency(portfolio.totalGainLoss)}
-              </p>
+              <div className={`text-2xl font-bold font-mono ${getChangeColor(portfolio.totalGainLoss)}`}>
+                <AnimatedNumber 
+                  value={portfolio.totalGainLoss} 
+                  format="currency"
+                  duration={800}
+                  prefix={portfolio.totalGainLoss >= 0 ? '+' : ''}
+                />
+              </div>
             </div>
           </div>
         </CardContent>
@@ -75,10 +88,14 @@ export function PortfolioSummary({ portfolio }: PortfolioSummaryProps) {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-muted-foreground">Return</p>
-              <p className={`text-2xl font-bold font-mono ${getChangeColor(portfolio.totalGainLoss)}`}>
-                {portfolio.totalGainLoss >= 0 ? '+' : ''}
-                {formatPercent(portfolio.totalGainLossPercent)}
-              </p>
+              <div className={`text-2xl font-bold font-mono ${getChangeColor(portfolio.totalGainLoss)}`}>
+                <AnimatedNumber 
+                  value={portfolio.totalGainLossPercent} 
+                  format="percent"
+                  duration={800}
+                  prefix={portfolio.totalGainLoss >= 0 ? '+' : ''}
+                />
+              </div>
             </div>
           </div>
         </CardContent>
