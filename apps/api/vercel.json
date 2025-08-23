@@ -15,10 +15,5 @@
       "src": "/(.*)",
       "dest": "../../api/index.js"
     }
-  ],
-  "installCommand": "echo 'No dependencies needed for serverless API'",
-  "buildCommand": "echo 'Serverless API ready for deployment'",
-  "github": {
-    "autoAlias": false
-  }
+  ]
 }
