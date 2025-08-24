@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CreateHoldingRequest, SearchResult } from '@/types/portfolio';
 import { useAddHolding } from '@/hooks/usePortfolio';
 import { useSearch } from '@/hooks/useSearch';
-import { useDefaultAccount } from '@/hooks/useAccounts';
+import { useActiveAccounts } from '@/hooks/useAccounts';
 import { AccountSelector } from '@/components/AccountSelector';
 import { X, Search } from 'lucide-react';
 
@@ -19,10 +19,29 @@ export function AddHoldingModal({ onClose }: AddHoldingModalProps) {
   const [quantity, setQuantity] = useState('');
   const [costBasis, setCostBasis] = useState('');
   const [selectedAccountId, setSelectedAccountId] = useState<string>('');
-
+  
   const { data: searchResults, isLoading: isSearching } = useSearch(searchQuery);
-  const { data: defaultAccount } = useDefaultAccount();
+  const { data: activeAccounts } = useActiveAccounts();
   const addHolding = useAddHolding();
+
+  // Find default account from active accounts list
+  const defaultAccount = activeAccounts?.find(account => account.isDefault);
+  
+  // Auto-select default account when accounts are loaded
+  useEffect(() => {
+    if (activeAccounts && activeAccounts.length > 0 && !selectedAccountId) {
+      const accountToSelect = defaultAccount || activeAccounts[0];
+      console.log('Auto-selecting account:', accountToSelect.name);
+      setSelectedAccountId(accountToSelect.id);
+    }
+  }, [activeAccounts, defaultAccount, selectedAccountId]);
+  
+  // Debug: Remove after testing
+  console.log('AddHoldingModal:', { 
+    selectedAccountId, 
+    accountsCount: activeAccounts?.length, 
+    defaultAccount: defaultAccount?.name
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +92,7 @@ export function AddHoldingModal({ onClose }: AddHoldingModalProps) {
               <AccountSelector
                 value={selectedAccountId}
                 onValueChange={setSelectedAccountId}
-                placeholder={defaultAccount ? `Default: ${defaultAccount.name}` : "Select account"}
+                placeholder={selectedAccountId ? undefined : (defaultAccount ? `Default: ${defaultAccount.name}` : "Select account")}
               />
             </div>
 

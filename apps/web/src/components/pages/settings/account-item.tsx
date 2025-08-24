@@ -101,14 +101,16 @@ export function AccountItem({ account, onEdit }: AccountItemProps) {
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Account
                 </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={handleDelete}
-                  className="text-destructive"
-                  disabled={deleteAccount.isPending}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  {deleteAccount.isPending ? 'Deleting...' : 'Delete Account'}
-                </DropdownMenuItem>
+                {!account.isDefault && (
+                  <DropdownMenuItem 
+                    onClick={handleDelete}
+                    className="text-destructive"
+                    disabled={deleteAccount.isPending}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    {deleteAccount.isPending ? 'Deleting...' : 'Delete Account'}
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

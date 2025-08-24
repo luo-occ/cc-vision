@@ -188,8 +188,8 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {(portfolio?.totalGainLossPercent ?? 0) > 0 ? '+' : ''}
-                {(portfolio?.totalGainLossPercent ?? 0).toFixed(2)}%
+                {(isNaN(portfolio?.totalGainLossPercent) ? 0 : portfolio?.totalGainLossPercent) > 0 ? '+' : ''}
+                {(isNaN(portfolio?.totalGainLossPercent) ? 0 : portfolio?.totalGainLossPercent).toFixed(2)}%
               </div>
               <p className="text-xs text-muted-foreground">
                 Overall portfolio performance

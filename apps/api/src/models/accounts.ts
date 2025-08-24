@@ -152,6 +152,16 @@ class AccountsModel {
   }
 
   async delete(id: string): Promise<boolean> {
+    // Check if this is a default account - default accounts cannot be deleted
+    const account = await this.findById(id);
+    if (!account) {
+      return false;
+    }
+    
+    if (account.isDefault) {
+      throw new Error('Default account cannot be deleted');
+    }
+
     const sql = 'DELETE FROM accounts WHERE id = $1';
     const result = await this.db.run(sql, [id]);
     return result.rowCount > 0;

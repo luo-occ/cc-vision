@@ -67,7 +67,7 @@ export default {
         return await healthHandler(request, env);
       }
       
-      if (path === '/api/accounts' || path === '/accounts') {
+      if (path.startsWith('/api/accounts') || path.startsWith('/accounts')) {
         return await accountsHandler(request, env);
       }
       

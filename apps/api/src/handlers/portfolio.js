@@ -32,12 +32,10 @@ export async function portfolioHandler(request, env) {
           JSON.stringify({
             success: true,
             data: {
-              summary: {
-                totalValue: 0,
-                totalGainLoss: 0,
-                totalGainLossPercent: 0,
-                currency: 'USD'
-              },
+              totalValue: 0,
+              totalCost: 0,
+              totalGainLoss: 0,
+              totalGainLossPercent: 0,
               holdings: [],
               lastUpdated: new Date().toISOString()
             },
@@ -76,18 +74,15 @@ export async function portfolioHandler(request, env) {
         return {
           id: holding.id,
           accountId: holding.accountId,
-          accountName: holding.accountName,
           symbol: holding.symbol,
           name: currentPrice?.name || holding.symbol,
           quantity: holding.quantity,
-          averagePrice: holding.averagePrice,
+          costBasis: holding.averagePrice,
           currentPrice: price,
-          marketValue: parseFloat(marketValue.toFixed(2)),
+          currentValue: parseFloat(marketValue.toFixed(2)),
           gainLoss: parseFloat(gainLoss.toFixed(2)),
           gainLossPercent: parseFloat(gainLossPercent.toFixed(2)),
-          assetType: holding.assetType,
-          lastUpdated: currentPrice?.lastUpdated || holding.updatedAt,
-          priceSource: currentPrice?.source || 'No current price'
+          type: holding.assetType?.toLowerCase() || 'stock'
         };
       });
       
@@ -95,14 +90,10 @@ export async function portfolioHandler(request, env) {
       const totalGainLossPercent = totalCost > 0 ? (totalGainLoss / totalCost) * 100 : 0;
       
       const portfolio = {
-        summary: {
-          totalValue: parseFloat(totalValue.toFixed(2)),
-          totalCost: parseFloat(totalCost.toFixed(2)),
-          totalGainLoss: parseFloat(totalGainLoss.toFixed(2)),
-          totalGainLossPercent: parseFloat(totalGainLossPercent.toFixed(2)),
-          currency: 'USD',
-          holdingsCount: holdings.length
-        },
+        totalValue: parseFloat(totalValue.toFixed(2)),
+        totalCost: parseFloat(totalCost.toFixed(2)),
+        totalGainLoss: parseFloat(totalGainLoss.toFixed(2)),
+        totalGainLossPercent: parseFloat(totalGainLossPercent.toFixed(2)),
         holdings: enrichedHoldings,
         lastUpdated: new Date().toISOString()
       };

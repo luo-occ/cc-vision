@@ -12,7 +12,10 @@
     "cf:dev": "wrangler dev",
     "cf:deploy": "wrangler deploy",
     "cf:deploy:staging": "wrangler deploy --env staging",
-    "cf:deploy:prod": "wrangler deploy --env production"
+    "cf:deploy:prod": "wrangler deploy --env production",
+    "test": "vitest",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "axios": "^1.7.2",
@@ -38,6 +41,7 @@
     "@types/uuid": "^10.0.0",
     "tsx": "^4.16.2",
     "typescript": "^5.5.3",
+    "vitest": "^1.6.1",
     "wrangler": "^4.32.0"
   },
   "engines": {

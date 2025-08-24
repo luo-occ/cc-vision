@@ -128,6 +128,54 @@ export class D1Database {
     }
   }
 
+  async getDefaultAccount() {
+    const sql = `
+      SELECT id, name, account_type, currency, is_default, is_active, created_at, updated_at
+      FROM accounts 
+      WHERE is_default = 1 AND is_active = 1
+      LIMIT 1
+    `;
+    
+    try {
+      const result = await this.db.prepare(sql).first();
+      
+      if (!result) return null;
+      
+      return {
+        id: result.id,
+        name: result.name,
+        accountType: result.account_type,
+        currency: result.currency,
+        isDefault: result.is_default === 1,
+        isActive: result.is_active === 1,
+        createdAt: result.created_at,
+        updatedAt: result.updated_at
+      };
+    } catch (error) {
+      console.error('Error getting default account:', error);
+      throw error;
+    }
+  }
+
+  async setDefaultAccount(accountId) {
+    try {
+      // First, set all accounts to non-default
+      await this.db.prepare('UPDATE accounts SET is_default = 0').run();
+      
+      // Then set the specified account as default
+      const result = await this.db.prepare('UPDATE accounts SET is_default = 1 WHERE id = ?').bind(accountId).run();
+      
+      if (result.changes === 0) {
+        throw new Error('Account not found');
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error setting default account:', error);
+      throw error;
+    }
+  }
+
   // Holdings operations
   async createHolding(holding) {
     const sql = `
@@ -244,6 +292,28 @@ export class D1Database {
       return result.success;
     } catch (error) {
       console.error('Error deleting holding:', error);
+      throw error;
+    }
+  }
+
+  async deleteAccount(id) {
+    // Check if this is a default account - default accounts cannot be deleted
+    const account = await this.getAccountById(id);
+    if (!account) {
+      return false;
+    }
+    
+    if (account.isDefault) {
+      throw new Error('Default account cannot be deleted');
+    }
+
+    const sql = `DELETE FROM accounts WHERE id = ?`;
+    
+    try {
+      const result = await this.db.prepare(sql).bind(id).run();
+      return result.success;
+    } catch (error) {
+      console.error('Error deleting account:', error);
       throw error;
     }
   }

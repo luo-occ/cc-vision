@@ -11,7 +11,13 @@ interface PortfolioSummaryProps {
 }
 
 export function PortfolioSummary({ portfolio }: PortfolioSummaryProps) {
-  const isPositive = portfolio.totalGainLoss >= 0;
+  // Handle NaN values by defaulting to 0
+  const safeTotalValue = isNaN(portfolio.totalValue) ? 0 : portfolio.totalValue;
+  const safeTotalCost = isNaN(portfolio.totalCost) ? 0 : portfolio.totalCost;
+  const safeTotalGainLoss = isNaN(portfolio.totalGainLoss) ? 0 : portfolio.totalGainLoss;
+  const safeTotalGainLossPercent = isNaN(portfolio.totalGainLossPercent) ? 0 : portfolio.totalGainLossPercent;
+  
+  const isPositive = safeTotalGainLoss >= 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -25,7 +31,7 @@ export function PortfolioSummary({ portfolio }: PortfolioSummaryProps) {
               <p className="text-sm font-medium text-muted-foreground">Total Value</p>
               <div className="text-2xl font-bold text-foreground font-mono">
                 <AnimatedNumber 
-                  value={portfolio.totalValue} 
+                  value={safeTotalValue} 
                   format="currency"
                   duration={800}
                 />
@@ -45,7 +51,7 @@ export function PortfolioSummary({ portfolio }: PortfolioSummaryProps) {
               <p className="text-sm font-medium text-muted-foreground">Total Cost</p>
               <div className="text-2xl font-bold text-foreground font-mono">
                 <AnimatedNumber 
-                  value={portfolio.totalCost} 
+                  value={safeTotalCost} 
                   format="currency"
                   duration={800}
                 />
@@ -67,12 +73,12 @@ export function PortfolioSummary({ portfolio }: PortfolioSummaryProps) {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-muted-foreground">Gain/Loss</p>
-              <div className={`text-2xl font-bold font-mono ${getChangeColor(portfolio.totalGainLoss)}`}>
+              <div className={`text-2xl font-bold font-mono ${getChangeColor(safeTotalGainLoss)}`}>
                 <AnimatedNumber 
-                  value={portfolio.totalGainLoss} 
+                  value={safeTotalGainLoss} 
                   format="currency"
                   duration={800}
-                  prefix={portfolio.totalGainLoss >= 0 ? '+' : ''}
+                  prefix={safeTotalGainLoss >= 0 ? '+' : ''}
                 />
               </div>
             </div>
@@ -88,12 +94,12 @@ export function PortfolioSummary({ portfolio }: PortfolioSummaryProps) {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-muted-foreground">Return</p>
-              <div className={`text-2xl font-bold font-mono ${getChangeColor(portfolio.totalGainLoss)}`}>
+              <div className={`text-2xl font-bold font-mono ${getChangeColor(safeTotalGainLoss)}`}>
                 <AnimatedNumber 
-                  value={portfolio.totalGainLossPercent} 
+                  value={safeTotalGainLossPercent} 
                   format="percent"
                   duration={800}
-                  prefix={portfolio.totalGainLoss >= 0 ? '+' : ''}
+                  prefix={safeTotalGainLoss >= 0 ? '+' : ''}
                 />
               </div>
             </div>
