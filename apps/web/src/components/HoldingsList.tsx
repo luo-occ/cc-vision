@@ -54,10 +54,12 @@ export function HoldingsList({ holdings, showConvertedValues = false }: Holdings
   // Process holdings data
   const processedHoldings = useMemo(() => {
     return holdings.map(holding => {
-      const currentValue = holding.currentPrice 
-        ? holding.quantity * holding.currentPrice 
-        : holding.quantity * holding.costBasis;
-      const costValue = holding.quantity * holding.costBasis;
+      const quantity = holding?.quantity ?? 0;
+      const costBasis = holding?.costBasis ?? 0;
+      const currentPrice = holding?.currentPrice ?? costBasis;
+      
+      const currentValue = currentPrice * quantity;
+      const costValue = quantity * costBasis;
       const gainLoss = currentValue - costValue;
       const gainLossPercent = costValue > 0 ? (gainLoss / costValue) * 100 : 0;
 
@@ -245,12 +247,12 @@ export function HoldingsList({ holdings, showConvertedValues = false }: Holdings
                   <div className="flex items-center space-x-3">
                     <div>
                       <h3 className="text-sm font-medium text-gray-900">
-                        {holding.symbol}
+                        {holding?.symbol ?? 'N/A'}
                       </h3>
-                      <p className="text-sm text-gray-500">{holding.name}</p>
+                      <p className="text-sm text-gray-500">{holding?.name ?? 'Unknown'}</p>
                     </div>
                     <Badge variant="secondary" className="text-xs">
-                      {holding.type}
+                      {holding?.type ?? 'UNKNOWN'}
                     </Badge>
                   </div>
                 </div>
@@ -258,19 +260,19 @@ export function HoldingsList({ holdings, showConvertedValues = false }: Holdings
                 <div className="flex items-center space-x-8">
                   <div className="w-24 text-right">
                     <p className="text-sm font-medium text-gray-900">
-                      {formatNumber(holding.quantity)}
+                      {formatNumber(holding?.quantity ?? 0)}
                     </p>
                   </div>
 
                   <div className="w-32 text-right">
                     <p className="text-sm font-medium text-gray-900">
-                      {formatCurrency(holding.costBasis)}
+                      {formatCurrency(holding?.costBasis ?? 0)}
                     </p>
                   </div>
 
                   <div className="w-32 text-right">
                     <p className="text-sm font-medium text-gray-900">
-                      {holding.currentPrice 
+                      {holding?.currentPrice 
                         ? formatCurrency(holding.currentPrice)
                         : '-'
                       }
@@ -279,25 +281,25 @@ export function HoldingsList({ holdings, showConvertedValues = false }: Holdings
 
                   <div className="w-32 text-right">
                     <p className="text-sm font-medium text-gray-900">
-                      {formatCurrency(holding.currentValue)}
+                      {formatCurrency(holding?.currentValue ?? 0)}
                     </p>
                   </div>
 
                   <div className="w-40 text-right">
                     <div className="flex items-center justify-end space-x-1">
-                      {holding.gainLoss !== 0 && (
-                        holding.gainLoss > 0 ? (
+                      {(holding?.gainLoss ?? 0) !== 0 && (
+                        (holding?.gainLoss ?? 0) > 0 ? (
                           <TrendingUp className="h-4 w-4 text-green-600" />
                         ) : (
                           <TrendingDown className="h-4 w-4 text-red-600" />
                         )
                       )}
                       <div className="text-right">
-                        <p className={`text-sm font-medium ${getChangeColor(holding.gainLoss)}`}>
-                          {holding.gainLoss >= 0 ? '+' : ''}{formatCurrency(holding.gainLoss)}
+                        <p className={`text-sm font-medium ${getChangeColor(holding?.gainLoss ?? 0)}`}>
+                          {(holding?.gainLoss ?? 0) >= 0 ? '+' : ''}{formatCurrency(holding?.gainLoss ?? 0)}
                         </p>
-                        <p className={`text-xs ${getChangeColor(holding.gainLoss)}`}>
-                          {holding.gainLossPercent >= 0 ? '+' : ''}{holding.gainLossPercent.toFixed(2)}%
+                        <p className={`text-xs ${getChangeColor(holding?.gainLoss ?? 0)}`}>
+                          {(holding?.gainLossPercent ?? 0) >= 0 ? '+' : ''}{(holding?.gainLossPercent ?? 0).toFixed(2)}%
                         </p>
                       </div>
                     </div>

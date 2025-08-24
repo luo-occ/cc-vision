@@ -1,0 +1,25 @@
+name = "cc-vision-api"
+main = "src/worker.js"
+compatibility_date = "2024-08-01"
+
+[env.production]
+name = "cc-vision-api-prod"
+
+[env.staging]
+name = "cc-vision-api-staging"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+
+# KV namespaces for caching (Redis replacement)
+[[kv_namespaces]]
+binding = "PORTFOLIO_KV"
+id = "a3a0e4728302413d8c1186c8df87b961"
+preview_id = "3370338918394a16a358fef8391f4ebf"
+
+# D1 database (PostgreSQL replacement)
+[[d1_databases]]
+binding = "DB"
+database_name = "portfolio-db"
+database_id = "ed49d334-fb7c-4226-962d-b09e613f6083"

@@ -13,7 +13,7 @@ This guide will help you deploy your Portfolio Tracker application to Vercel.
 
 ### 1. Install Dependencies
 ```bash
-pnpm install
+npm install
 ```
 
 ### 2. Configure Environment Variables

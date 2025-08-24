@@ -17,6 +17,11 @@ export default function HoldingsPage() {
   const [showConvertedValues, setShowConvertedValues] = useState(false);
   const { data: portfolio, isLoading, error, refetch } = usePortfolio();
 
+  // Render modal outside of conditional returns
+  const modal = showAddModal && (
+    <AddHoldingModal onClose={() => setShowAddModal(false)} />
+  );
+
   // Calculate analytics data
   const analyticsData = useMemo(() => {
     if (!portfolio?.holdings) return null;
@@ -83,47 +88,60 @@ export default function HoldingsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-primary"></div>
-          <p className="mt-4 text-muted-foreground">Loading holdings...</p>
+      <>
+        {modal}
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-primary"></div>
+            <p className="mt-4 text-muted-foreground">Loading holdings...</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-destructive" />
-          <h2 className="mt-4 text-xl font-semibold text-foreground">Error Loading Holdings</h2>
-          <p className="mt-2 text-muted-foreground">Failed to load your holdings data.</p>
-          <Button onClick={() => refetch()} className="mt-4">
-            Try Again
-          </Button>
+      <>
+        {modal}
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <AlertCircle className="mx-auto h-12 w-12 text-destructive" />
+            <h2 className="mt-4 text-xl font-semibold text-foreground">Error Loading Holdings</h2>
+            <p className="mt-2 text-muted-foreground">Failed to load your holdings data.</p>
+            <Button onClick={() => refetch()} className="mt-4">
+              Try Again
+            </Button>
+            <Button onClick={() => setShowAddModal(true)} className="mt-2 ml-2">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Holding
+            </Button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!portfolio?.holdings || portfolio.holdings.length === 0) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-muted flex items-center justify-center">
-            <Plus className="h-8 w-8 text-muted-foreground" />
+      <>
+        {modal}
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-muted flex items-center justify-center">
+              <Plus className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <h2 className="text-xl font-semibold text-foreground">No Holdings Yet</h2>
+            <p className="mt-2 text-muted-foreground mb-6">
+              Start building your portfolio by adding your first holding.
+            </p>
+            <Button onClick={() => setShowAddModal(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Your First Holding
+            </Button>
           </div>
-          <h2 className="text-xl font-semibold text-foreground">No Holdings Yet</h2>
-          <p className="mt-2 text-muted-foreground mb-6">
-            Start building your portfolio by adding your first holding.
-          </p>
-          <Button onClick={() => setShowAddModal(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Your First Holding
-          </Button>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -303,11 +321,6 @@ export default function HoldingsPage() {
           </TabsContent>
         </Tabs>
       </div>
-
-      {/* Add Holding Modal */}
-      {showAddModal && (
-        <AddHoldingModal onClose={() => setShowAddModal(false)} />
-      )}
     </div>
   );
 }

@@ -13,6 +13,7 @@ interface AddHoldingModalProps {
 }
 
 export function AddHoldingModal({ onClose }: AddHoldingModalProps) {
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAsset, setSelectedAsset] = useState<SearchResult | null>(null);
   const [quantity, setQuantity] = useState('');
@@ -42,7 +43,7 @@ export function AddHoldingModal({ onClose }: AddHoldingModalProps) {
       await addHolding.mutateAsync(holding);
       onClose();
     } catch (error) {
-      console.error('Failed to add holding:', error);
+      // Error handling for failed holding addition
     }
   };
 

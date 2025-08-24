@@ -1,11 +1,15 @@
 {
   "name": "stock-crypto-tracker",
   "private": true,
-  "scripts": {
-    "dev": "echo 'Use specific dev commands: dev:web, dev:api, dev:mobile'",
+    "scripts": {
+    "dev": "npm run dev:web",
     "dev:web": "cd apps/web && npm run dev",
-    "dev:api": "cd apps/api && npm run dev", 
+    "dev:api": "cd apps/api && npm run dev",
+    "dev:api:cf": "cd apps/api && npm run cf:dev",
     "dev:mobile": "cd apps/mobile && npm run dev",
+    "dev:full": "concurrently \"npm run dev:web\" \"npm run dev:api:cf\" --names \"web,api\" --prefix-colors \"cyan,yellow\"",
+    "dev:all": "concurrently \"npm run dev:web\" \"npm run dev:api:cf\" \"npm run dev:mobile\" --names \"web,api,mobile\" --prefix-colors \"cyan,yellow,magenta\"",
+    "dev:legacy": "concurrently \"npm run dev:web\" \"npm run dev:api\" --names \"web,api\" --prefix-colors \"cyan,yellow\"",
     "build": "echo 'Use specific build commands: build:web, build:api, build:shared'",
     "build:shared": "cd packages/shared && npm run build",
     "build:api": "cd apps/api && npm run build",
@@ -14,6 +18,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.14.9",
+    "concurrently": "^9.2.0",
     "typescript": "^5.5.3"
   },
   "engines": {

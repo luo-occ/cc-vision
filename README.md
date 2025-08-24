@@ -7,11 +7,11 @@ A personal portfolio tracking application for stocks and cryptocurrencies with a
 ### Tech Stack
 - **Frontend (Web)**: Next.js 14, React 18, TypeScript, TailwindCSS
 - **Mobile (iOS)**: React Native, Expo, TypeScript
-- **Backend**: Node.js, Express, TypeScript, PostgreSQL, Redis
+- **Backend**: Cloudflare Workers, D1 Database, KV Storage
 - **APIs**: Alpha Vantage (free - 25 calls/day), CoinGecko (free - 100 calls/min)
-- **Deployment**: Vercel (web & API as separate projects)
-- **Build System**: npm workspaces (simplified from TurboRepo)
-- **Data Strategy**: Hourly automated updates + manual refresh on app open
+- **Deployment**: Vercel (web) + Cloudflare Workers (API)
+- **Build System**: npm workspaces with concurrency support
+- **Data Strategy**: Edge caching + on-demand updates
 
 ### Project Structure
 ```
@@ -36,20 +36,17 @@ cc-vision/
 │   │   │   └── utils/       # Utility functions
 │   │   ├── app.json         # Expo configuration
 │   │   └── package.json
-│   └── api/                 # Node.js Express backend
+│   └── api/                 # Cloudflare Workers backend
 │       ├── src/
-│       │   ├── api/         # Main API router
-│       │   ├── routes/      # Feature-specific routes
-│       │   ├── services/    # Business logic services
-│       │   ├── models/      # Database models (PostgreSQL)
-│       │   ├── providers/   # External API providers
-│       │   ├── middleware/  # Express middleware
-│       │   ├── types/       # TypeScript definitions
-│       │   └── utils/       # Utility functions
-│       ├── dist/            # Compiled JavaScript
-│       ├── tsconfig.json    # TypeScript configuration
+│       │   ├── cloudflare/  # Cloudflare-specific implementations
+│       │   │   ├── models/  # D1 Database models
+│       │   │   └── services/ # KV Cache services
+│       │   ├── handlers/    # API route handlers
+│       │   ├── worker.js    # Cloudflare Workers entry point
+│       │   └── types/       # TypeScript definitions
+│       ├── wrangler.toml    # Cloudflare configuration
+│       ├── setup-cloudflare.sh # Setup script
 │       └── package.json
-├── docker-compose.yml       # PostgreSQL & Redis for development
 └── package.json            # Root package.json (npm workspaces)
 ```
 

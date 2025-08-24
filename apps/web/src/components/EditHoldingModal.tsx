@@ -12,8 +12,8 @@ interface EditHoldingModalProps {
 }
 
 export function EditHoldingModal({ holding, onClose }: EditHoldingModalProps) {
-  const [quantity, setQuantity] = useState(holding.quantity.toString());
-  const [costBasis, setCostBasis] = useState(holding.costBasis.toString());
+  const [quantity, setQuantity] = useState((holding?.quantity ?? 0).toString());
+  const [costBasis, setCostBasis] = useState((holding?.costBasis ?? 0).toString());
 
   const updateHolding = useUpdateHolding();
 
@@ -22,11 +22,11 @@ export function EditHoldingModal({ holding, onClose }: EditHoldingModalProps) {
     
     const updates: UpdateHoldingRequest = {};
     
-    if (parseFloat(quantity) !== holding.quantity) {
+    if (parseFloat(quantity) !== (holding?.quantity ?? 0)) {
       updates.quantity = parseFloat(quantity);
     }
     
-    if (parseFloat(costBasis) !== holding.costBasis) {
+    if (parseFloat(costBasis) !== (holding?.costBasis ?? 0)) {
       updates.costBasis = parseFloat(costBasis);
     }
 

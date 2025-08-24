@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePortfolio, useRefreshPrices } from '@/hooks/usePortfolio';
 import { PortfolioSummary } from '@/components/PortfolioSummary';
 import { AddHoldingModal } from '@/components/AddHoldingModal';
@@ -56,6 +56,7 @@ function DashboardSkeleton() {
 
 export default function DashboardPage() {
   const [showAddModal, setShowAddModal] = useState(false);
+  
   const { data: portfolio, isLoading, error, refetch } = usePortfolio();
   const refreshPrices = useRefreshPrices();
 
@@ -173,10 +174,10 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {new Date(portfolio.lastUpdated).toLocaleDateString()}
+                {portfolio?.lastUpdated ? new Date(portfolio.lastUpdated).toLocaleDateString() : 'N/A'}
               </div>
               <p className="text-xs text-muted-foreground">
-                {new Date(portfolio.lastUpdated).toLocaleTimeString()}
+                {portfolio?.lastUpdated ? new Date(portfolio.lastUpdated).toLocaleTimeString() : 'Not available'}
               </p>
             </CardContent>
           </Card>
@@ -187,8 +188,8 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {portfolio.totalGainLossPercent > 0 ? '+' : ''}
-                {portfolio.totalGainLossPercent.toFixed(2)}%
+                {(portfolio?.totalGainLossPercent ?? 0) > 0 ? '+' : ''}
+                {(portfolio?.totalGainLossPercent ?? 0).toFixed(2)}%
               </div>
               <p className="text-xs text-muted-foreground">
                 Overall portfolio performance

@@ -24,7 +24,7 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://cc-vision-api.cco-oul.workers.dev';
 // Updated to use production API endpoint
 
 class ApiClient {
