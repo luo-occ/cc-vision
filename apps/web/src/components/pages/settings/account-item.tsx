@@ -31,26 +31,20 @@ export function AccountItem({ account, onEdit }: AccountItemProps) {
     }
   };
 
-  const getAccountTypeLabel = (type: string) => {
-    switch (type) {
-      case 'SECURITIES': return 'Securities';
-      case 'CRYPTO': return 'Crypto';
-      case 'RETIREMENT': return 'Retirement';
-      case 'SAVINGS': return 'Savings';
-      case 'CHECKING': return 'Checking';
-      default: return type;
-    }
-  };
-
-  const getAccountTypeColor = (type: string) => {
-    switch (type) {
-      case 'SECURITIES': return 'bg-blue-100 text-blue-800';
-      case 'CRYPTO': return 'bg-purple-100 text-purple-800';
-      case 'RETIREMENT': return 'bg-green-100 text-green-800';
-      case 'SAVINGS': return 'bg-yellow-100 text-yellow-800';
-      case 'CHECKING': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const getTagColor = (tag: string) => {
+    // Generate consistent colors for different tags
+    const tagColors: Record<string, string> = {
+      'retirement': 'bg-green-100 text-green-800',
+      'savings': 'bg-yellow-100 text-yellow-800',
+      'checking': 'bg-gray-100 text-gray-800',
+      'crypto': 'bg-purple-100 text-purple-800',
+      'investment': 'bg-blue-100 text-blue-800',
+      '401k': 'bg-green-100 text-green-800',
+      'roth': 'bg-emerald-100 text-emerald-800',
+      'taxable': 'bg-orange-100 text-orange-800',
+      'emergency': 'bg-red-100 text-red-800',
+    };
+    return tagColors[tag.toLowerCase()] || 'bg-slate-100 text-slate-800';
   };
 
   return (
@@ -66,10 +60,20 @@ export function AccountItem({ account, onEdit }: AccountItemProps) {
               {!account.isActive && (
                 <Badge variant="destructive">Inactive</Badge>
               )}
-              <Badge className={getAccountTypeColor(account.accountType)}>
-                {getAccountTypeLabel(account.accountType)}
-              </Badge>
             </div>
+            
+            {/* Display tags */}
+            {account.tags && account.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mb-2">
+                {account.tags.map((tag, index) => (
+                  tag.name && (
+                    <Badge key={index} className={getTagColor(tag.name)} variant="outline">
+                      {tag.name}
+                    </Badge>
+                  )
+                ))}
+              </div>
+            )}
             
             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
               <span>Currency: {account.currency}</span>

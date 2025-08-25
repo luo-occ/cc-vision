@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { LoadingSpinner } from './loading-spinner';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from './button';
+import { AppLoading } from './app-loading';
 
 interface LoadingContainerProps {
   children: ReactNode;
@@ -64,12 +65,11 @@ export function LoadingContainer({
     }
 
     return (
-      <div className={containerClass}>
-        <div className="text-center space-y-4">
-          <LoadingSpinner size="lg" />
-          <p className="text-sm text-muted-foreground">{loadingText}</p>
-        </div>
-      </div>
+      <AppLoading 
+        text={loadingText} 
+        fullScreen={fullScreen}
+        className={className}
+      />
     );
   }
 

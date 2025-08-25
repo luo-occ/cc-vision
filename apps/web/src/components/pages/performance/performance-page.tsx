@@ -4,19 +4,13 @@ import { usePortfolio } from '@/hooks/usePortfolio';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AppLoading } from '@/components/ui/app-loading';
 
 export default function PerformancePage() {
   const { data: portfolio, isLoading, error, refetch } = usePortfolio();
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-primary"></div>
-          <p className="mt-4 text-muted-foreground">Loading performance data...</p>
-        </div>
-      </div>
-    );
+    return <AppLoading text="Loading performance data..." />;
   }
 
   if (error) {

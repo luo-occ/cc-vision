@@ -83,6 +83,33 @@ export class D1Database {
     }
   }
 
+  async updateAccount(id, account) {
+    const sql = `
+      UPDATE accounts 
+      SET name = ?, 
+          currency = ?, 
+          is_default = ?, 
+          is_active = ?,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `;
+    
+    try {
+      const result = await this.db.prepare(sql).bind(
+        account.name,
+        account.currency || 'USD',
+        account.isDefault ? 1 : 0,
+        account.isActive !== false ? 1 : 0, // Default to active if not specified
+        id
+      ).run();
+      
+      return result.changes > 0;
+    } catch (error) {
+      console.error('Error updating account:', error);
+      throw error;
+    }
+  }
+
   async getAccounts() {
     const sql = `
       SELECT 

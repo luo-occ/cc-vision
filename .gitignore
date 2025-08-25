@@ -16,7 +16,7 @@ build/
 .env.production.local
 
 # Database
-# PostgreSQL data is managed in Docker volumes
+# Cloudflare D1 database is managed remotely
 
 # Logs
 npm-debug.log*

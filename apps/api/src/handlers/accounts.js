@@ -478,6 +478,85 @@ export async function accountsHandler(request, env) {
       }
     }
     
+    // Handle PUT request for updating account: /api/accounts/{id}
+    if (request.method === 'PUT' && pathParts.length >= 3 && pathParts[3] !== 'default' && pathParts[3] !== 'tags') {
+      const accountId = pathParts[2];
+      
+      try {
+        const accountData = await request.json();
+        
+        // Validate required fields
+        if (!accountData.name) {
+          return new Response(
+            JSON.stringify({ 
+              success: false,
+              error: 'Missing required fields: name' 
+            }),
+            {
+              status: 400,
+              headers: {
+                'Content-Type': 'application/json',
+                ...corsHeaders,
+              },
+            }
+          );
+        }
+        
+        // Update the account
+        const success = await database.updateAccount(accountId, accountData);
+        
+        if (!success) {
+          return new Response(
+            JSON.stringify({ 
+              success: false,
+              error: 'Account not found' 
+            }),
+            {
+              status: 404,
+              headers: {
+                'Content-Type': 'application/json',
+                ...corsHeaders,
+              },
+            }
+          );
+        }
+        
+        // Get the updated account
+        const updatedAccount = await database.getAccountById(accountId);
+        
+        return new Response(
+          JSON.stringify({
+            success: true,
+            data: updatedAccount,
+            timestamp: new Date().toISOString(),
+            source: 'Cloudflare D1'
+          }),
+          {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+              ...corsHeaders,
+            },
+          }
+        );
+      } catch (error) {
+        return new Response(
+          JSON.stringify({ 
+            success: false,
+            error: 'Failed to update account',
+            message: error.message 
+          }),
+          {
+            status: 500,
+            headers: {
+              'Content-Type': 'application/json',
+              ...corsHeaders,
+            },
+          }
+        );
+      }
+    }
+
     // Check if this is a "set default account" request: /api/accounts/{id}/default
     if (pathParts.length >= 4 && pathParts[3] === 'default') {
       const accountId = pathParts[2];

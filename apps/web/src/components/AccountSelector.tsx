@@ -40,7 +40,8 @@ export function AccountSelector({
             <div className="flex flex-col">
               <span className="font-medium">{account.name}</span>
               <span className="text-sm text-muted-foreground">
-                {account.currency} • {account.accountType}
+                {account.currency}
+                {account.tags && account.tags.length > 0 && ` • ${account.tags.map(tag => tag.name).filter(Boolean).join(', ')}`}
                 {account.isDefault && ' • Default'}
               </span>
             </div>

@@ -7,37 +7,42 @@ export interface CreateHoldingRequest {
   costBasis: number;
 }
 
+export interface AccountTag {
+  name: string;
+  createdAt: string;
+}
+
 export interface Account {
   id: string;
   name: string;
-  accountType: 'SECURITIES' | 'CRYPTO' | 'RETIREMENT' | 'SAVINGS' | 'CHECKING';
   currency: string;
   group?: string;
   isDefault: boolean;
   isActive: boolean;
   platformId?: string;
+  tags: AccountTag[];
   createdAt: string;
   updatedAt: string;
 }
 
 export interface NewAccount {
   name: string;
-  accountType: 'SECURITIES' | 'CRYPTO' | 'RETIREMENT' | 'SAVINGS' | 'CHECKING';
   currency: string;
   group?: string;
   isDefault?: boolean;
   isActive?: boolean;
   platformId?: string;
+  tags?: string[];
 }
 
 export interface AccountUpdate {
   name?: string;
-  accountType?: 'SECURITIES' | 'CRYPTO' | 'RETIREMENT' | 'SAVINGS' | 'CHECKING';
   currency?: string;
   group?: string;
   isDefault?: boolean;
   isActive?: boolean;
   platformId?: string;
+  tags?: string[];
 }
 
 export interface SearchResult {

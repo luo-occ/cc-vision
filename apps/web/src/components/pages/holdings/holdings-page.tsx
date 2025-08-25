@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency, formatNumber } from '@/lib/utils';
+import { AppLoading } from '@/components/ui/app-loading';
 
 export default function HoldingsPage() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -90,12 +91,7 @@ export default function HoldingsPage() {
     return (
       <>
         {modal}
-        <div className="flex min-h-screen items-center justify-center">
-          <div className="text-center">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-primary"></div>
-            <p className="mt-4 text-muted-foreground">Loading holdings...</p>
-          </div>
-        </div>
+        <AppLoading text="Loading holdings..." />
       </>
     );
   }
