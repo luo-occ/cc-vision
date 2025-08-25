@@ -73,32 +73,27 @@ cc-vision/
 
 ### Prerequisites
 - Node.js 20+ and npm
-- Docker and Docker Compose
+- Cloudflare account (for D1 database and KV storage)
+- Wrangler CLI (`npm install -g wrangler`)
 - Expo CLI (for mobile development)
-- Redis (or use Docker)
-- PostgreSQL (or use Docker)
 
 ### Environment Variables
 Create `.env` files in each app directory:
 
-**apps/api/.env**
+**apps/api/.env** (Optional - for external APIs only)
 ```env
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/portfolio  # PostgreSQL connection
-REDIS_URL=redis://localhost:6379
-ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key
-COINGECKO_API_KEY=your_coingecko_key  # Optional for higher limits
-UPDATE_INTERVAL=3600000  # 1 hour in milliseconds
-PORT=3001
+ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key  # Optional for stock data
+COINGECKO_API_KEY=your_coingecko_key  # Optional for crypto data
 ```
 
 **apps/web/.env.local**
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL=http://localhost:8787  # Cloudflare Workers dev server
 ```
 
 **apps/mobile/.env**
 ```env
-EXPO_PUBLIC_API_URL=http://localhost:3001
+EXPO_PUBLIC_API_URL=http://localhost:8787  # Cloudflare Workers dev server
 ```
 
 ### Installation & Running
@@ -110,21 +105,34 @@ EXPO_PUBLIC_API_URL=http://localhost:3001
    npm install
    ```
 
-2. **Start development services**
+2. **Setup Cloudflare D1 Database**
    ```bash
-   # Start PostgreSQL and Redis
-   docker-compose up -d
+   cd apps/api
    
-   # Start all applications (database tables auto-created)
+   # Login to Cloudflare
+   wrangler login
+   
+   # Create D1 database
+   wrangler d1 create portfolio-db
+   
+   # Create KV namespace
+   wrangler kv:namespace create "PORTFOLIO_KV"
+   
+   # Update wrangler.toml with the generated IDs
+   ```
+
+3. **Start development services**
+   ```bash
+   # Start all applications (D1 tables auto-created)
    npm run dev
    ```
 
-3. **Individual app commands**
+4. **Individual app commands**
    ```bash
    # Web app (http://localhost:3000)
    npm run dev:web
    
-   # API server (http://localhost:3001)
+   # API server with Cloudflare Workers (http://localhost:8787)
    npm run dev:api
    
    # Mobile app
@@ -152,43 +160,43 @@ npx expo build:ios
 ## 🚢 Deployment
 
 ### Current Architecture
-The project is deployed as **two separate Vercel projects**:
+The project uses **Cloudflare's edge infrastructure**:
 
-1. **Web App**: `cc-vision-web` (Next.js frontend)
-2. **API**: `cc-vision-api` (Node.js backend as serverless functions)
+1. **Web App**: Vercel (Next.js frontend)
+2. **API**: Cloudflare Workers (serverless functions)
+3. **Database**: Cloudflare D1 (SQLite-compatible)
+4. **Cache**: Cloudflare KV (key-value storage)
 
 ### Web App Deployment (Vercel)
 1. Connect your repository to Vercel
 2. Set build root directory to `apps/web`
 3. Set environment variables:
    ```env
-   NEXT_PUBLIC_API_URL=https://your-api-deployment.vercel.app
+   NEXT_PUBLIC_API_URL=https://your-worker.your-subdomain.workers.dev
    ```
 4. Deploy automatically on push to main
 
-### API Deployment (Vercel)
-1. Create separate Vercel project for API
-2. Set build root directory to `apps/api`  
-3. Set environment variables in Vercel dashboard:
+### API Deployment (Cloudflare Workers)
+1. Configure `wrangler.toml` with your account details
+2. Set environment variables in Cloudflare dashboard or wrangler:
+   ```bash
+   # Deploy to production
+   cd apps/api
+   npm run deploy
+   
+   # Deploy to staging
+   npm run deploy:staging
+   ```
+3. Environment variables (optional):
    ```env
-   DATABASE_URL=your-postgresql-connection-string
-   REDIS_URL=your-redis-connection-string
    ALPHA_VANTAGE_API_KEY=your-alpha-vantage-key
    COINGECKO_API_KEY=your-coingecko-key
    ```
-4. Deploy automatically on API changes
 
-### Alternative: Docker Deployment
-```bash
-# Build and deploy API to your server
-cd apps/api
-docker build -t cc-vision-api .
-docker run -p 3001:3001 --env-file .env cc-vision-api
-```
-
-### Database
-- **PostgreSQL**: Robust relational database with Docker support
-- **Backup**: Use `pg_dump` or Docker volume backups
+### Database & Storage
+- **Cloudflare D1**: Serverless SQLite database with global distribution
+- **Cloudflare KV**: Key-value storage for caching and sessions
+- **Backup**: Use `wrangler d1 backup` for database backups
 
 ## 🔧 API Endpoints
 
@@ -279,22 +287,23 @@ MIT License - see LICENSE file for details
 - **CoinGecko**: Cryptocurrency data (100 requests/minute free)
 
 ### Rate Limiting & Caching Strategy
-- **Hourly Updates**: Automated background job updates all holdings
-- **On-Demand Refresh**: Manual refresh when opening app
-- **Redis Caching**: Store prices with 5-minute expiry for quick access
+- **On-Demand Updates**: Manual refresh when opening app
+- **Cloudflare KV Caching**: Store prices with 5-minute expiry for quick access
 - **Smart API Usage**: Only fetch when cache is expired or on manual refresh
+- **Edge Caching**: Global distribution via Cloudflare's edge network
 
 ## 🚨 Important Notes
 
 ### Personal Usage Optimizations
 - **No Authentication**: Simplified for personal use only
-- **PostgreSQL Database**: Robust, production-ready storage
+- **Cloudflare D1 Database**: Serverless SQLite with global replication
 - **Free APIs Only**: Designed to work within free tier limits
 - **Smart Caching**: Minimizes API calls while keeping data fresh
-- **Hourly Updates**: Background updates + manual refresh on app open
+- **Edge Computing**: Fast response times via Cloudflare Workers
 
 ### Development Considerations
 - **API Rate Limits**: 25 stock calls/day max (Alpha Vantage)
-- **Data Backup**: Use Docker volumes or `pg_dump` for backups
-- **Environment Variables**: Keep API keys secure
+- **Data Backup**: Use `wrangler d1 backup` for database backups
+- **Environment Variables**: Keep API keys secure in Cloudflare dashboard
 - **Mobile Testing**: Use Expo for easy iOS testing
+- **Global Deployment**: Automatic deployment to 200+ edge locations

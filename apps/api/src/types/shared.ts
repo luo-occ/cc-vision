@@ -1,14 +1,19 @@
 // Shared types for the Portfolio API
 
+export interface AccountTag {
+  name: string;
+  createdAt: Date;
+}
+
 export interface Account {
   id: string;
   name: string;
-  accountType: 'SECURITIES' | 'CASH' | 'CRYPTO' | 'OTHER';
   group?: string;
   currency: string;
   isDefault: boolean;
   isActive: boolean;
   platformId?: string;
+  tags: AccountTag[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,21 +21,21 @@ export interface Account {
 export interface NewAccount {
   id?: string;
   name: string;
-  accountType?: 'SECURITIES' | 'CASH' | 'CRYPTO' | 'OTHER';
   group?: string;
   currency: string;
   isDefault?: boolean;
   isActive?: boolean;
   platformId?: string;
+  tags?: string[];
 }
 
 export interface AccountUpdate {
   name?: string;
-  accountType?: 'SECURITIES' | 'CASH' | 'CRYPTO' | 'OTHER';
   group?: string;
   isDefault?: boolean;
   isActive?: boolean;
   platformId?: string;
+  tags?: string[];
 }
 
 export interface Holding {

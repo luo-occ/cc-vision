@@ -20,6 +20,15 @@ export class D1Database {
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP
       )`,
       
+      // Account tags table
+      `CREATE TABLE IF NOT EXISTS account_tags (
+        account_id TEXT NOT NULL,
+        tag_name TEXT NOT NULL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (account_id, tag_name),
+        FOREIGN KEY (account_id) REFERENCES accounts (id) ON DELETE CASCADE
+      )`,
+      
       // Holdings table
       `CREATE TABLE IF NOT EXISTS holdings (
         id TEXT PRIMARY KEY,
@@ -34,6 +43,8 @@ export class D1Database {
       )`,
 
       // Create indexes for better performance
+      `CREATE INDEX IF NOT EXISTS idx_account_tags_account_id ON account_tags(account_id)`,
+      `CREATE INDEX IF NOT EXISTS idx_account_tags_tag_name ON account_tags(tag_name)`,
       `CREATE INDEX IF NOT EXISTS idx_holdings_account_id ON holdings(account_id)`,
       `CREATE INDEX IF NOT EXISTS idx_holdings_symbol ON holdings(symbol)`,
       `CREATE INDEX IF NOT EXISTS idx_accounts_default ON accounts(is_default)`
@@ -61,7 +72,7 @@ export class D1Database {
       const result = await this.db.prepare(sql).bind(
         account.id,
         account.name,
-        account.accountType,
+        'SECURITIES', // Default account type (deprecated)
         account.currency || 'USD',
         account.isDefault ? 1 : 0,
         account.isActive ? 1 : 0
@@ -76,10 +87,29 @@ export class D1Database {
 
   async getAccounts() {
     const sql = `
-      SELECT id, name, account_type, currency, is_default, is_active, created_at, updated_at
-      FROM accounts 
-      WHERE is_active = 1
-      ORDER BY is_default DESC, name ASC
+      SELECT 
+        a.id, 
+        a.name, 
+        a.account_type, 
+        a.currency, 
+        a.is_default, 
+        a.is_active, 
+        a.created_at, 
+        a.updated_at,
+        COALESCE(
+          JSON_GROUP_ARRAY(
+            JSON_OBJECT(
+              'name', at.tag_name,
+              'createdAt', at.created_at
+            )
+          ),
+          JSON_ARRAY()
+        ) as tags
+      FROM accounts a
+      LEFT JOIN account_tags at ON a.id = at.account_id
+      WHERE a.is_active = 1
+      GROUP BY a.id, a.name, a.account_type, a.currency, a.is_default, a.is_active, a.created_at, a.updated_at
+      ORDER BY a.is_default DESC, a.name ASC
     `;
     
     try {
@@ -92,7 +122,8 @@ export class D1Database {
         isDefault: account.is_default === 1,
         isActive: account.is_active === 1,
         createdAt: account.created_at,
-        updatedAt: account.updated_at
+        updatedAt: account.updated_at,
+        tags: JSON.parse(account.tags || '[]')
       }));
     } catch (error) {
       console.error('Error getting accounts:', error);
@@ -102,9 +133,28 @@ export class D1Database {
 
   async getAccountById(id) {
     const sql = `
-      SELECT id, name, account_type, currency, is_default, is_active, created_at, updated_at
-      FROM accounts 
-      WHERE id = ? AND is_active = 1
+      SELECT 
+        a.id, 
+        a.name, 
+        a.account_type, 
+        a.currency, 
+        a.is_default, 
+        a.is_active, 
+        a.created_at, 
+        a.updated_at,
+        COALESCE(
+          JSON_GROUP_ARRAY(
+            JSON_OBJECT(
+              'name', at.tag_name,
+              'createdAt', at.created_at
+            )
+          ),
+          JSON_ARRAY()
+        ) as tags
+      FROM accounts a
+      LEFT JOIN account_tags at ON a.id = at.account_id
+      WHERE a.id = ? AND a.is_active = 1
+      GROUP BY a.id, a.name, a.account_type, a.currency, a.is_default, a.is_active, a.created_at, a.updated_at
     `;
     
     try {
@@ -120,7 +170,8 @@ export class D1Database {
         isDefault: result.is_default === 1,
         isActive: result.is_active === 1,
         createdAt: result.created_at,
-        updatedAt: result.updated_at
+        updatedAt: result.updated_at,
+        tags: JSON.parse(result.tags || '[]')
       };
     } catch (error) {
       console.error('Error getting account by ID:', error);
@@ -318,6 +369,120 @@ export class D1Database {
     }
   }
 
+  // Tag management methods
+  async addAccountTag(accountId, tagName) {
+    const sql = `
+      INSERT INTO account_tags (account_id, tag_name)
+      VALUES (?, ?)
+    `;
+    
+    try {
+      const result = await this.db.prepare(sql).bind(accountId, tagName.toLowerCase().trim()).run();
+      return result.success;
+    } catch (error) {
+      console.error('Error adding account tag:', error);
+      throw error;
+    }
+  }
+
+  async removeAccountTag(accountId, tagName) {
+    const sql = `
+      DELETE FROM account_tags 
+      WHERE account_id = ? AND tag_name = ?
+    `;
+    
+    try {
+      const result = await this.db.prepare(sql).bind(accountId, tagName.toLowerCase().trim()).run();
+      return result.success;
+    } catch (error) {
+      console.error('Error removing account tag:', error);
+      throw error;
+    }
+  }
+
+  async setAccountTags(accountId, tagNames) {
+    // First, remove all existing tags
+    const deleteSql = `DELETE FROM account_tags WHERE account_id = ?`;
+    await this.db.prepare(deleteSql).bind(accountId).run();
+    
+    // Then add new tags
+    if (tagNames.length > 0) {
+      for (const tagName of tagNames) {
+        const insertSql = `
+          INSERT INTO account_tags (account_id, tag_name)
+          VALUES (?, ?)
+        `;
+        await this.db.prepare(insertSql).bind(accountId, tagName.toLowerCase().trim()).run();
+      }
+    }
+  }
+
+  async getAccountTags(accountId) {
+    const sql = `
+      SELECT tag_name 
+      FROM account_tags 
+      WHERE account_id = ? 
+      ORDER BY tag_name ASC
+    `;
+    
+    try {
+      const result = await this.db.prepare(sql).bind(accountId).all();
+      return result.results.map(row => row.tag_name);
+    } catch (error) {
+      console.error('Error getting account tags:', error);
+      throw error;
+    }
+  }
+
+  async getAllTags() {
+    const sql = `
+      SELECT DISTINCT tag_name 
+      FROM account_tags 
+      ORDER BY tag_name ASC
+    `;
+    
+    try {
+      const result = await this.db.prepare(sql).all();
+      return result.results.map(row => row.tag_name);
+    } catch (error) {
+      console.error('Error getting all tags:', error);
+      throw error;
+    }
+  }
+
+  async getAccountsByTags(tagNames) {
+    if (tagNames.length === 0) {
+      return this.getAccounts();
+    }
+
+    const placeholders = tagNames.map(() => '?').join(',');
+    const sql = `
+      SELECT DISTINCT a.*
+      FROM accounts a
+      INNER JOIN account_tags at ON a.id = at.account_id
+      WHERE at.tag_name IN (${placeholders})
+      AND a.is_active = 1
+      ORDER BY a.is_default DESC, a.name ASC
+    `;
+    
+    try {
+      const result = await this.db.prepare(sql).bind(...tagNames).all();
+      return result.results.map(account => ({
+        id: account.id,
+        name: account.name,
+        accountType: account.account_type,
+        currency: account.currency,
+        isDefault: account.is_default === 1,
+        isActive: account.is_active === 1,
+        createdAt: account.created_at,
+        updatedAt: account.updated_at
+      }));
+    } catch (error) {
+      console.error('Error getting accounts by tags:', error);
+      throw error;
+    }
+  }
+
   // Utility methods
   async ensureDefaultAccount() {
     const accounts = await this.getAccounts();
@@ -327,7 +492,6 @@ export class D1Database {
       const defaultAccountData = {
         id: 'default-account-' + Date.now(),
         name: 'Default Account',
-        accountType: 'SECURITIES',
         currency: 'USD',
         isDefault: true,
         isActive: true

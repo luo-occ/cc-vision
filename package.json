@@ -2,18 +2,16 @@
   "name": "stock-crypto-tracker",
   "private": true,
     "scripts": {
-    "dev": "npm run dev:web",
+    "dev": "npm run dev:full",
     "dev:web": "cd apps/web && npm run dev",
     "dev:api": "cd apps/api && npm run dev",
-    "dev:api:cf": "cd apps/api && npm run cf:dev",
     "dev:mobile": "cd apps/mobile && npm run dev",
-    "dev:full": "concurrently \"npm run dev:web\" \"npm run dev:api:cf\" --names \"web,api\" --prefix-colors \"cyan,yellow\"",
-    "dev:all": "concurrently \"npm run dev:web\" \"npm run dev:api:cf\" \"npm run dev:mobile\" --names \"web,api,mobile\" --prefix-colors \"cyan,yellow,magenta\"",
-    "dev:legacy": "concurrently \"npm run dev:web\" \"npm run dev:api\" --names \"web,api\" --prefix-colors \"cyan,yellow\"",
+    "dev:full": "concurrently \"npm run dev:web\" \"npm run dev:api\" --names \"web,api\" --prefix-colors \"cyan,yellow\"",
+    "dev:all": "concurrently \"npm run dev:web\" \"npm run dev:api\" \"npm run dev:mobile\" --names \"web,api,mobile\" --prefix-colors \"cyan,yellow,magenta\"",
     "build": "echo 'Use specific build commands: build:web, build:api, build:shared'",
     "build:shared": "cd packages/shared && npm run build",
-    "build:api": "cd apps/api && npm run build",
     "build:web": "cd apps/web && npm run build",
+    "deploy:api": "cd apps/api && npm run deploy",
     "clean": "rm -rf node_modules && rm -rf apps/*/node_modules && rm -rf packages/*/node_modules"
   },
   "devDependencies": {
