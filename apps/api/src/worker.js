@@ -52,15 +52,13 @@ export default {
       // Initialize database on first request (if needed)
       if (env.DB) {
         const database = new D1Database(env.DB);
-        // Initialize tables and ensure default account exists
-        ctx.waitUntil(Promise.resolve().then(async () => {
-          try {
-            await database.initializeTables();
-            await database.ensureDefaultAccount();
-          } catch (error) {
-            console.error('Database initialization error:', error);
-          }
-        }));
+        // Initialize tables and ensure default account exists (synchronously for first request)
+        try {
+          await database.initializeTables();
+          await database.ensureDefaultAccount();
+        } catch (error) {
+          console.error('Database initialization error:', error);
+        }
       }
       // Route API endpoints
       if (path === '/api/health' || path === '/health') {

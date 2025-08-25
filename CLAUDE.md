@@ -5,10 +5,10 @@
 wealthfolio is a wonderful project and a good teacher. whenever you want to implement some function, you should always look for implementation in the wealthfolio.
 It's code located `references/wealthfolio`.
 
+## Write PRD first
+Always write prd about new feature in prd/ first, then implement the feature code.
+
 # Development Guidelines
-
-
-## Philosophy
 
 
 ### Core Beliefs

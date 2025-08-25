@@ -66,6 +66,9 @@ web-build/
 .DS_Store
 Thumbs.db
 
+# Cloudflare Workers
+.wrangler/
+
 # references
 references/
 .vercel

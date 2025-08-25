@@ -12,7 +12,6 @@ export class D1Database {
       `CREATE TABLE IF NOT EXISTS accounts (
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
-        account_type TEXT NOT NULL,
         currency TEXT DEFAULT 'USD',
         is_default INTEGER DEFAULT 0,
         is_active INTEGER DEFAULT 1,
@@ -64,15 +63,14 @@ export class D1Database {
   // Account operations
   async createAccount(account) {
     const sql = `
-      INSERT INTO accounts (id, name, account_type, currency, is_default, is_active)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO accounts (id, name, currency, is_default, is_active)
+      VALUES (?, ?, ?, ?, ?)
     `;
     
     try {
       const result = await this.db.prepare(sql).bind(
         account.id,
         account.name,
-        'SECURITIES', // Default account type (deprecated)
         account.currency || 'USD',
         account.isDefault ? 1 : 0,
         account.isActive ? 1 : 0
@@ -90,7 +88,6 @@ export class D1Database {
       SELECT 
         a.id, 
         a.name, 
-        a.account_type, 
         a.currency, 
         a.is_default, 
         a.is_active, 
@@ -108,7 +105,7 @@ export class D1Database {
       FROM accounts a
       LEFT JOIN account_tags at ON a.id = at.account_id
       WHERE a.is_active = 1
-      GROUP BY a.id, a.name, a.account_type, a.currency, a.is_default, a.is_active, a.created_at, a.updated_at
+      GROUP BY a.id, a.name, a.currency, a.is_default, a.is_active, a.created_at, a.updated_at
       ORDER BY a.is_default DESC, a.name ASC
     `;
     
@@ -117,7 +114,6 @@ export class D1Database {
       return result.results.map(account => ({
         id: account.id,
         name: account.name,
-        accountType: account.account_type,
         currency: account.currency,
         isDefault: account.is_default === 1,
         isActive: account.is_active === 1,
@@ -136,7 +132,6 @@ export class D1Database {
       SELECT 
         a.id, 
         a.name, 
-        a.account_type, 
         a.currency, 
         a.is_default, 
         a.is_active, 
@@ -154,7 +149,7 @@ export class D1Database {
       FROM accounts a
       LEFT JOIN account_tags at ON a.id = at.account_id
       WHERE a.id = ? AND a.is_active = 1
-      GROUP BY a.id, a.name, a.account_type, a.currency, a.is_default, a.is_active, a.created_at, a.updated_at
+      GROUP BY a.id, a.name, a.currency, a.is_default, a.is_active, a.created_at, a.updated_at
     `;
     
     try {
@@ -165,7 +160,6 @@ export class D1Database {
       return {
         id: result.id,
         name: result.name,
-        accountType: result.account_type,
         currency: result.currency,
         isDefault: result.is_default === 1,
         isActive: result.is_active === 1,
@@ -181,7 +175,7 @@ export class D1Database {
 
   async getDefaultAccount() {
     const sql = `
-      SELECT id, name, account_type, currency, is_default, is_active, created_at, updated_at
+      SELECT id, name, currency, is_default, is_active, created_at, updated_at
       FROM accounts 
       WHERE is_default = 1 AND is_active = 1
       LIMIT 1
@@ -195,7 +189,6 @@ export class D1Database {
       return {
         id: result.id,
         name: result.name,
-        accountType: result.account_type,
         currency: result.currency,
         isDefault: result.is_default === 1,
         isActive: result.is_active === 1,
@@ -470,7 +463,6 @@ export class D1Database {
       return result.results.map(account => ({
         id: account.id,
         name: account.name,
-        accountType: account.account_type,
         currency: account.currency,
         isDefault: account.is_default === 1,
         isActive: account.is_active === 1,

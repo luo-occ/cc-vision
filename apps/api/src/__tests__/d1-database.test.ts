@@ -12,7 +12,6 @@ class MockD1Database {
     this.accounts.push({
       id: 'default-account-id',
       name: 'Default Account',
-      account_type: 'SECURITIES',
       currency: 'USD',
       is_default: 1,
       is_active: 1,
@@ -31,16 +30,15 @@ class MockD1Database {
             const newAccount = {
               id: params[0],
               name: params[1],
-              account_type: params[2],
-              currency: params[3],
-              is_default: params[4] ? 1 : 0,
-              is_active: params[5] ? 1 : 0,
+              currency: params[2],
+              is_default: params[3] ? 1 : 0,
+              is_active: params[4] ? 1 : 0,
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()
             };
             
             // Handle default account logic
-            if (params[4]) { // isDefault
+            if (params[3]) { // isDefault
               this.accounts.forEach(acc => acc.is_default = 0);
             }
             
@@ -91,7 +89,6 @@ class MockD1Database {
               results: this.accounts.map(account => ({
                 id: account.id,
                 name: account.name,
-                account_type: account.account_type,
                 currency: account.currency,
                 is_default: account.is_default,
                 is_active: account.is_active,
@@ -116,7 +113,6 @@ class MockD1Database {
     this.accounts = [{
       id: 'default-account-id',
       name: 'Default Account',
-      account_type: 'SECURITIES',
       currency: 'USD',
       is_default: 1,
       is_active: 1,
@@ -152,7 +148,6 @@ describe('D1Database - Default Account Protection', () => {
       const newAccount = {
         id: 'test-account-id',
         name: 'Test Account',
-        accountType: 'SECURITIES',
         currency: 'USD',
         isDefault: false,
         isActive: true
@@ -175,7 +170,6 @@ describe('D1Database - Default Account Protection', () => {
       const inactiveDefaultAccount = {
         id: 'inactive-default-id',
         name: 'Inactive Default',
-        accountType: 'SECURITIES',
         currency: 'USD',
         isDefault: true,
         isActive: false
@@ -195,7 +189,6 @@ describe('D1Database - Default Account Protection', () => {
       const newAccount = {
         id: 'new-default-id',
         name: 'New Default Account',
-        accountType: 'SECURITIES',
         currency: 'USD',
         isDefault: false,
         isActive: true
@@ -226,7 +219,6 @@ describe('D1Database - Default Account Protection', () => {
       const newAccount = {
         id: 'new-default-id',
         name: 'New Default Account',
-        accountType: 'SECURITIES',
         currency: 'USD',
         isDefault: true,
         isActive: true
@@ -245,7 +237,6 @@ describe('D1Database - Default Account Protection', () => {
       const newAccount = {
         id: 'regular-account-id',
         name: 'Regular Account',
-        accountType: 'SECURITIES',
         currency: 'USD',
         isDefault: false,
         isActive: true
@@ -267,8 +258,8 @@ describe('D1Database - Default Account Protection', () => {
     it('should return accounts in correct order (default first)', async () => {
       // Create additional accounts
       const accounts = [
-        { id: 'account-1', name: 'Account 1', accountType: 'SECURITIES', currency: 'USD', isDefault: false, isActive: true },
-        { id: 'account-2', name: 'Account 2', accountType: 'SECURITIES', currency: 'USD', isDefault: false, isActive: true }
+        { id: 'account-1', name: 'Account 1', currency: 'USD', isDefault: false, isActive: true },
+        { id: 'account-2', name: 'Account 2', currency: 'USD', isDefault: false, isActive: true }
       ];
       
       for (const account of accounts) {
@@ -290,7 +281,6 @@ describe('D1Database - Default Account Protection', () => {
       const inactiveAccount = {
         id: 'inactive-account-id',
         name: 'Inactive Account',
-        accountType: 'SECURITIES',
         currency: 'USD',
         isDefault: false,
         isActive: false

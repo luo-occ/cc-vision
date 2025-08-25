@@ -156,6 +156,71 @@ export async function accountsHandler(request, env) {
         }
       );
     }
+
+    // Handle route-specific logic first (before generic handlers)
+    const url = new URL(request.url);
+    const path = url.pathname;
+    const pathParts = path.split('/');
+    
+    // Handle tag management endpoints: /api/accounts/{id}/tags
+    if (pathParts.length >= 4 && pathParts[3] === 'tags') {
+      const accountId = pathParts[2];
+      
+      // POST /api/accounts/{id}/tags - Add tag to account
+      if (request.method === 'POST') {
+        try {
+          const { tagName } = await request.json();
+          
+          if (!tagName || typeof tagName !== 'string') {
+            return new Response(
+              JSON.stringify({ 
+                success: false,
+                error: 'Tag name is required' 
+              }),
+              {
+                status: 400,
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...corsHeaders,
+                },
+              }
+            );
+          }
+          
+          await database.addAccountTag(accountId, tagName);
+          
+          return new Response(
+            JSON.stringify({
+              success: true,
+              timestamp: new Date().toISOString(),
+              source: 'Cloudflare D1'
+            }),
+            {
+              status: 200,
+              headers: {
+                'Content-Type': 'application/json',
+                ...corsHeaders,
+              },
+            }
+          );
+        } catch (error) {
+          return new Response(
+            JSON.stringify({ 
+              success: false,
+              error: 'Failed to add tag to account',
+              message: error.message 
+            }),
+            {
+              status: 500,
+              headers: {
+                'Content-Type': 'application/json',
+                ...corsHeaders,
+              },
+            }
+          );
+        }
+      }
+    }
     
     if (request.method === 'POST') {
       // Create new account
@@ -219,11 +284,6 @@ export async function accountsHandler(request, env) {
         );
       }
     }
-    
-    // Handle POST and DELETE requests
-    const url = new URL(request.url);
-    const path = url.pathname;
-    const pathParts = path.split('/');
     
     // Handle tag management endpoints: /api/accounts/{id}/tags
     if (pathParts.length >= 4 && pathParts[3] === 'tags') {
