@@ -15,6 +15,8 @@ export async function accountsHandler(request, env) {
     const pathParts = url.pathname.split('/').filter(Boolean);
     const method = request.method;
 
+    console.log('Request:', method, url.pathname, pathParts);
+
     // Handle OPTIONS for CORS
     if (method === 'OPTIONS') {
       return new Response(null, {
@@ -26,9 +28,11 @@ export async function accountsHandler(request, env) {
     // Handle PUT /api/accounts/{id} - Update account
     if (method === 'PUT' && pathParts.length === 3) {
       const accountId = pathParts[2];
+      console.log('PUT account:', accountId);
       
       try {
         const accountData = await request.json();
+        console.log('Account data:', accountData);
         
         // Validate required fields
         if (!accountData.name) {
@@ -54,7 +58,7 @@ export async function accountsHandler(request, env) {
           return new Response(
             JSON.stringify({ 
               success: false,
-              error: 'Account not found'
+              error: 'Account not found' 
             }),
             {
               status: 404,
@@ -134,10 +138,13 @@ export async function accountsHandler(request, env) {
     }
 
     // Method not allowed
+    console.log('Method not allowed:', method, pathParts);
     return new Response(
       JSON.stringify({ 
         success: false,
-        error: 'Method not allowed'
+        error: 'Method not allowed',
+        method: method,
+        path: url.pathname
       }),
       {
         status: 405,

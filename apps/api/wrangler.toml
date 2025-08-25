@@ -2,6 +2,10 @@ name = "cc-vision-api"
 main = "src/worker.js"
 compatibility_date = "2024-08-01"
 
+# Development configuration
+[dev]
+port = 8788
+
 [env.production]
 name = "cc-vision-api-prod"
 

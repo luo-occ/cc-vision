@@ -103,7 +103,7 @@ export class D1Database {
         id
       ).run();
       
-      return result.changes > 0;
+      return result.meta.changes > 0;
     } catch (error) {
       console.error('Error updating account:', error);
       throw error;

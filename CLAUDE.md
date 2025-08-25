@@ -11,11 +11,10 @@ Always write prd about new feature in prd/ first, then implement the feature cod
 # Development Guidelines
 
 
-### Core Beliefs
-
 - **Incremental progress over big bangs** - Small changes that compile and pass tests
 - **Learning from existing code** - Study and plan before implementing
 - **Pragmatic over dogmatic** - Adapt to project reality
+- **Don't repeat yourself** Write reusable functions or components
 - **Clear intent over clever code** - Be boring and obvious
 
 ### Simplicity Means

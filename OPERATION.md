@@ -58,6 +58,11 @@ NEXT_PUBLIC_API_URL=http://localhost:8787  # Cloudflare Workers dev server
 EXPO_PUBLIC_API_URL=http://localhost:8787  # Cloudflare Workers dev server
 ```
 
+ | Environment       | Frontend       | API                               | Config File   |
+ |-------------------|----------------|-----------------------------------|---------------|
+ | Local Development | localhost:3001 | localhost:8788                    | .env.local    |
+ | Production        | Your domain    | cc-vision-api.cco-oul.workers.dev | Commented out |
+
 ### 4. Get API Keys (Optional)
 
 #### Alpha Vantage (for stock data)
